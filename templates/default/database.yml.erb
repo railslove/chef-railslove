@@ -1,0 +1,9 @@
+<%= @environment || node.chef_environment %>:
+  adapter: <%= @adapter %>
+  database: <%= @db %>
+  host: <%= @host[:fqdn] %>
+  username: <%= @host[:username] %>
+  password: <%= @host[:password] %>
+  encoding: utf8
+  pool: 5
+  reconnect: true
