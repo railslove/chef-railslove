@@ -1,0 +1,4 @@
+<%= @environment || node.chef_environment %>:
+  host: <%= @host[:fqdn] %>
+  port: <%= @port || 27017 %>
+  database: <%= @db %>

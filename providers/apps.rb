@@ -34,6 +34,15 @@ def database_config(site)
   config.merge(:fqdn => host[:ipaddress])
 end
 
+def mongoid_config(site)
+  host = search("node", "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
+  Chef::Log.error("Got no database host!!!") unless host
+
+  {
+    :fqdn     => host[:ipaddress]
+  }
+end
+
 action :remove do
   query = "NOT (#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
   Chef::Log.info("Running query: #{query}")
@@ -63,12 +72,24 @@ action :create do
       mode "0775"
     end
 
-    template "#{node[:railslove][:home]}/#{site[:id]}/shared/database.yml" do
-      source "database.yml.erb"
-      owner node[:railslove][:user]
-      group node[:railslove][:user]
-      mode "0775"
-      variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
+    if site[:db] && ["mysql", "postgresql"].include?(site[:db][:type])
+      template "#{node[:railslove][:home]}/#{site[:id]}/shared/database.yml" do
+        source "database.yml.erb"
+        owner node[:railslove][:user]
+        group node[:railslove][:user]
+        mode "0775"
+        variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
+      end
+    end
+
+    if site[:db] && ["mongoid"].include?(site[:db][:adapter])
+      template "#{node[:railslove][:home]}/#{site[:id]}/shared/mongoid.yml" do
+        source "mongoid.yml.erb"
+        owner node[:railslove][:user]
+        group node[:railslove][:user]
+        mode "0775"
+        variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
+      end
     end
 
     logrotate_app site[:id] do
