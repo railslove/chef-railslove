@@ -36,7 +36,10 @@ end
 
 def mongoid_config(site)
   host = search("node", "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
-  Chef::Log.error("Got no database host!!!") unless host
+  unless host
+    Chef::Log.error("Got no database host!!!")
+    return {}
+  end
 
   {
     :fqdn     => host[:ipaddress]
