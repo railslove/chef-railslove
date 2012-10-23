@@ -28,6 +28,7 @@ package "libxslt-dev"
 package "openjdk-7-jre-headless"
 package "nodejs"
 package "imagemagick"
+package "libcurl-dev"
 
 gem_package "bundler"
 gem_package "rake"
