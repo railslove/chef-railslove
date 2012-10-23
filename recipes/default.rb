@@ -30,6 +30,7 @@ package "nodejs"
 package "imagemagick"
 package "libcurl3"
 package "libcurl3-gnutls"
+package "libcurl4-gnutls-dev"
 package "libcurl4-openssl-dev"
 
 gem_package "bundler"
