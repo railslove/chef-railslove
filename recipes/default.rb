@@ -30,5 +30,6 @@ package "nodejs"
 package "imagemagick"
 
 gem_package "bundler"
+gem_package "rake"
 gem_package "ruby-shadow"
 gem_package "astrails-safe"
