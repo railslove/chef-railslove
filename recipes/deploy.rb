@@ -16,23 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-user node[:railslove][:user] do
-  home node[:railslove][:home]
-  shell "/bin/bash"
-  manage_home true
+
+railslove_deployment "applications" do
+  action [:deploy]
 end
 
-directory "#{node[:railslove][:home]}/.ssh" do
-  owner node[:railslove][:user]
-  group node[:railslove][:user]
-  mode "0700"
-end
-
-ssh_keys = search(:users, "groups:#{node[:railslove][:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
-template "#{node[:railslove][:home]}/.ssh/authorized_keys" do
-  source "authorized_keys.erb"
-  owner node[:railslove][:user]
-  group node[:railslove][:user]
-  mode "0600"
-  variables :ssh_keys => ssh_keys.flatten
-end

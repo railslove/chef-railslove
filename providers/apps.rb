@@ -60,36 +60,43 @@ action :create do
 
   search("#{new_resource.data_bag}", "#{query}") do |item|
     site = Chef::Mixin::DeepMerge.merge(item.to_hash, (item[node.chef_environment] || {}))
+    deploy_config = site[:deploy]
+
+    # set defaults
+    deploy_config[:user] ||= new_resource.user
+    deploy_config[:home] ||= new_resource.home
+
+    deploy_config[:deploy_to] ||= File.join(deploy_config[:home], site[:id])
 
     # as recursive only applies the perms to the top-most directory we have to
     # be it the hard way.
-    directory "#{node[:railslove][:home]}/#{site[:id]}" do
-      owner node[:railslove][:user]
-      group node[:railslove][:user]
+    directory "#{deploy_config[:deploy_to]}" do
+      owner deploy_config[:user]
+      group deploy_config[:user]
       mode "0775"
       recursive true
     end
-    directory "#{node[:railslove][:home]}/#{site[:id]}/shared" do
-      owner node[:railslove][:user]
-      group node[:railslove][:user]
+    directory "#{deploy_config[:deploy_to]}/shared" do
+      owner deploy_config[:user]
+      group deploy_config[:user]
       mode "0775"
     end
 
     if site[:db] && ["mysql", "postgresql"].include?(site[:db][:type])
-      template "#{node[:railslove][:home]}/#{site[:id]}/shared/database.yml" do
+      template "#{deploy_config[:deploy_to]}/shared/database.yml" do
         source "database.yml.erb"
-        owner node[:railslove][:user]
-        group node[:railslove][:user]
+        owner deploy_config[:user]
+        group deploy_config[:user]
         mode "0775"
         variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
       end
     end
 
     if site[:db] && ["mongoid"].include?(site[:db][:adapter])
-      template "#{node[:railslove][:home]}/#{site[:id]}/shared/mongoid.yml" do
+      template "#{deploy_config[:deploy_to]}/shared/mongoid.yml" do
         source "mongoid.yml.erb"
-        owner node[:railslove][:user]
-        group node[:railslove][:user]
+        owner deploy_config[:user]
+        group deploy_config[:user]
         mode "0775"
         variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
       end
@@ -97,7 +104,7 @@ action :create do
 
     logrotate_app site[:id] do
       cookbook "logrotate"
-      path "#{node[:railslove][:home]}#{site[:id]}/shared/log/*.log"
+      path "#{deploy_config[:deploy_to]}/shared/log/*.log"
       frequency "daily"
       rotate 30
     end

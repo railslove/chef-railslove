@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: railslove
-# Resources:: apps
+# Resources:: deployment
 #
 # Copyright 2012, Railslove GmbH
 #
@@ -19,7 +19,7 @@
 
 # Data bag application object needs a "roles": ["<some_role>"] tag, that
 # matches one of the node's roles to actually be added by the action.
-actions :create, :remove
+actions :deploy
 
 # :data_bag is the object to search
 # :certificate_data_bag is the object to look for certificates
@@ -27,6 +27,10 @@ actions :create, :remove
 attribute :data_bag, :kind_of => String, :default => "applications", :name_attribute => true
 attribute :cookbook, :kind_of => String, :default => "railslove"
 
-# these are default values, which should actually be definded in the application databag - see deployment resource
+# these are default values, which should actually be definded in the application databag
 attribute :user, :kind_of => String, :default => "rails"
 attribute :home, :kind_of => String, :default => "/srv/www"
+attribute :deploy_group, :kind_of => String, :default => "deployer"
+attribute :migrate, :kind_of => Boolean, :default => true
+attribute :migrate_command, :kind_of => String, :default => "bundle exec rake db:migrate"
+attribute :restart_command, :kind_of => String, :default => "touch tmp/restart.txt"

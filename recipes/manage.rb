@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe "railslove::deploy"
+include_recipe "railslove::users"
 
 railslove_apps "applications" do
   action [:remove, :create]
