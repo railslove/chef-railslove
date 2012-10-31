@@ -54,7 +54,7 @@ search(:applications, "#{query}") do |application|
     end
   end
 
-  authorized_keys = search(:users, "groups:#{deploy_config[:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
+  authorized_keys = search(:users, "groups:#{site[:deploy_group] || "deployer"} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
   template "#{deploy_config[:home]}/.ssh/authorized_keys" do
     source "authorized_keys.erb"
     owner deploy_config[:user]
