@@ -35,7 +35,7 @@ search(:applications, "#{query}") do |application|
     mode "0700"
   end
 
-  if deploy_user = search(:users, "groups:#{deploy_config[:deploy_user} NOT action:remove").first
+  if deploy_user = search(:users, "groups:#{deploy_config[:deploy_user]} NOT action:remove").first
     private_key = deploy_user[:private_key]
     public_ky = deploy_user[:public_key]
 
