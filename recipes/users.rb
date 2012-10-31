@@ -35,13 +35,33 @@ search(:applications, "#{query}") do |application|
     mode "0700"
   end
 
-  ssh_keys = search(:users, "groups:#{deploy_config[:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
+  if deploy_user = search(:users, "groups:#{deploy_config[:deploy_user} NOT action:remove").first
+    private_key = deploy_user[:private_key]
+    public_ky = deploy_user[:public_key]
+
+    file "#{deploy_config[:home]}/.ssh/id_rsa" do
+      owner deploy_config[:user]
+      group deploy_config[:user]
+      mode "0600"
+      content private_key
+    end
+
+    public_key = search(:users, "groups:#{deploy_config[:deploy_user]} NOT action:remove").first
+    file "#{deploy_config[:home]}/.ssh/id_rsa.pub" do
+      owner deploy_config[:user]
+      group deploy_config[:user]
+      mode "0600"
+      content public_key
+    end
+  end
+
+  authorized_keys = search(:users, "groups:#{deploy_config[:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
   template "#{deploy_config[:home]}/.ssh/authorized_keys" do
     source "authorized_keys.erb"
     owner deploy_config[:user]
     group deploy_config[:user]
     mode "0600"
-    variables :ssh_keys => ssh_keys.flatten
+    variables :ssh_keys => authorized_keys.flatten
   end
 
 end
