@@ -31,6 +31,6 @@ attribute :cookbook, :kind_of => String, :default => "railslove"
 attribute :user, :kind_of => String, :default => "rails"
 attribute :home, :kind_of => String, :default => "/srv/www"
 attribute :deploy_group, :kind_of => String, :default => "deployer"
-attribute :migrate, :kind_of => Boolean, :default => true
+attribute :migrate, :kind_of => [TrueClass, FalseClass, NilClass], :default => true
 attribute :migrate_command, :kind_of => String, :default => "bundle exec rake db:migrate"
 attribute :restart_command, :kind_of => String, :default => "touch tmp/restart.txt"
