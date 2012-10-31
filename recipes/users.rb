@@ -43,7 +43,7 @@ search(:applications, "#{query}") do |application|
       owner deploy_config[:user]
       group deploy_config[:user]
       mode "0600"
-      content private_key
+      content private_key.join("\n")
     end
 
     public_key = search(:users, "groups:#{deploy_config[:deploy_user]} NOT action:remove").first
