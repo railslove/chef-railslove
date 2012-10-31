@@ -45,7 +45,7 @@ action :deploy do
     deploy_config[:deploy_to] ||= File.join(deploy_config[:home], site[:id])
 
     application site[:id] do
-      path deploy_config[:deploy_to])
+      path deploy_config[:deploy_to]
       owner deploy_config[:user]
       group deploy_config[:group]
 
