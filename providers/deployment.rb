@@ -25,8 +25,6 @@
 # end
 
 
-depends "application"
-
 action :deploy do
   query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
 
