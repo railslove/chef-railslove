@@ -37,7 +37,7 @@ search(:applications, "#{query}") do |application|
 
   if deploy_user = site[:deploy][:deploy_user]
     private_key = deploy_user[:private_key]
-    public_ky = deploy_user[:public_key]
+    public_key = deploy_user[:public_key]
 
     file "#{deploy_config[:home]}/.ssh/id_rsa" do
       owner deploy_config[:user]
@@ -46,7 +46,6 @@ search(:applications, "#{query}") do |application|
       content private_key.join("\n")
     end
 
-    public_key = search(:users, "groups:#{deploy_config[:deploy_user]} NOT action:remove").first
     file "#{deploy_config[:home]}/.ssh/id_rsa.pub" do
       owner deploy_config[:user]
       group deploy_config[:user]
