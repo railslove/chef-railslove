@@ -1,6 +1,7 @@
 
 action :before_compile do
 
+  Chef::Log.info("Railslove-Rails running before compile")
   if new_resource.bundler.nil?
     new_resource.bundler new_resource.gems.any? { |gem, ver| gem == 'bundler' }
   end
@@ -17,7 +18,7 @@ action :before_compile do
 end
 
 action :before_deploy do
-
+  Chef::Log.info "Railslove-Rails running before deploy"
   new_resource.environment['RAILS_ENV'] = new_resource.environment_name
 
   install_gems
@@ -25,7 +26,7 @@ action :before_deploy do
 end
 
 action :before_migrate do
-
+  Chef::Log.info "Railslove-Rails running before migrate"
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
     directory "#{new_resource.path}/shared/vendor_bundle" do
@@ -57,6 +58,8 @@ action :before_migrate do
 end
 
 action :before_symlink do
+
+  Chef::Log.info "Railslove-Rails running before symlink"
 
   if new_resource.precompile_assets.nil?
     new_resource.precompile_assets ::File.exists?(::File.join(new_resource.release_path, "config", "assets.yml"))
