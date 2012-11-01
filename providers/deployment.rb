@@ -40,7 +40,7 @@ action :deploy do
     deploy_config[:migrate_command] ||= new_resource.migrate_command
     deploy_config[:restart_command] ||= new_resource.restart_command
 
-    deploy_config[:deploy_to] ||= File.join(deploy_config[:home], site[:id])
+    deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
 
     application site[:id] do
       path deploy_config[:deploy_to]
