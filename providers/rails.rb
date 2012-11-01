@@ -5,12 +5,6 @@ action :before_compile do
     new_resource.bundler new_resource.gems.any? { |gem, ver| gem == 'bundler' }
   end
 
-  unless new_resource.migration_command
-    command = "rake db:migrate"
-    command = "#{bundle_command} exec #{command}" if new_resource.bundler
-    new_resource.migration_command command
-  end
-
   new_resource.environment.update({
     "RAILS_ENV" => new_resource.environment_name,
     "PATH" => [Gem.default_bindir, ENV['PATH']].join(':')
