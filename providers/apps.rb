@@ -54,7 +54,7 @@ action :remove do
     Chef::Log.info(site)
     if deploy_config = site[:deploy]
       deploy_config[:home] ||= new_resource.home
-      deploy_config[:deploy_to] ||= File.join(deploy_config[:home], site[:id])
+      deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
       execute("rm -rf #{deploy_config[:deploy_to]}")
     end
   end
@@ -72,7 +72,7 @@ action :create do
     deploy_config[:user] ||= new_resource.user
     deploy_config[:home] ||= new_resource.home
 
-    deploy_config[:deploy_to] ||= File.join(deploy_config[:home], site[:id])
+    deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
 
     # as recursive only applies the perms to the top-most directory we have to
     # be it the hard way.
