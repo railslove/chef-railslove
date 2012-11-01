@@ -29,7 +29,7 @@ action :deploy do
   query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
 
   search("#{new_resource.data_bag}", "#{query}") do |application|
-    site = Chef::Mixin::DeepMerge.merge(item.to_hash, (item[node.chef_environment] || {}))
+    site = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
     deploy_config = site[:deploy]
 
     # set defaults
