@@ -50,7 +50,10 @@ action :remove do
   query = "NOT (#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
   Chef::Log.info("Running query: #{query}")
   search("#{new_resource.data_bag}", "#{query}") do |site|
-    execute("rm -rf #{node[:railslove][:home]}/#{site[:id]}")
+    deploy_config = site[:deploy]
+    deploy_config[:home] ||= new_resource.home
+    deploy_config[:deploy_to] ||= File.join(deploy_config[:home], site[:id])
+    execute("rm -rf #{deploy_config[:deploy_to]}")
   end
 end
 
