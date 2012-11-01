@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+#
+include Chef::Resource::ApplicationBase
+
 attribute :gems, :kind_of => [Array, Hash], :default => []
 attribute :bundler, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :bundler_without_groups, :kind_of => [Array], :default => []
