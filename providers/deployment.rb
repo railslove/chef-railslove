@@ -68,6 +68,7 @@ action :deploy do
       if deploy_config[:application_type] == "rails"
         railslove_rails do
           gems %w(bundler rake)
+          bundler true
         end
       end
 
