@@ -54,7 +54,6 @@ action :deploy do
       })
       repository deploy_config[:repository]
       revision deploy_config[:revision]
-      shallow_clone true
 
       deploy_key deploy_config[:deploy_key]
 
