@@ -37,7 +37,7 @@ action :deploy do
     deploy_config[:home] ||= new_resource.home
     deploy_config[:deploy_group] ||= new_resource.deploy_group
     deploy_config[:migrate] ||= new_resource.migrate
-    deploy_config[:migration_command] ||= new_resource.migrate_command
+    deploy_config[:migration_command] ||= new_resource.migration_command
     deploy_config[:restart_command] ||= new_resource.restart_command
 
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
