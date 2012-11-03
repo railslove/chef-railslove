@@ -42,7 +42,7 @@ action :deploy do
 
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
 
-    application site[:id] do
+    application site[:deploy_to] do
       path deploy_config[:deploy_to]
       owner deploy_config[:user]
       group deploy_config[:group]
