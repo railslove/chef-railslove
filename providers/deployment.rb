@@ -38,12 +38,13 @@ action :deploy do
     deploy_config[:deploy_group] ||= new_resource.deploy_group
     deploy_config[:migrate] ||= new_resource.migrate
     deploy_config[:migration_command] ||= new_resource.migration_command
-    deploy_config[:restart_command] ||= new_resource.restart_command
-    deploy_config[:restart_command] = "cd #{new_resource.release_path} && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
 
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
 
-    application site[:deploy_to] do
+    deploy_config[:restart_command] ||= new_resource.restart_command
+    deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
+
+    application site[:id] do
       path deploy_config[:deploy_to]
       owner deploy_config[:user]
       group deploy_config[:group]
