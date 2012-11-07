@@ -72,6 +72,7 @@ action :deploy do
         railslove_rails do
           gems %w(bundler rake)
           bundler true
+          precompile_assets deploy_config[:precompile_assets]
         end
       end
 
