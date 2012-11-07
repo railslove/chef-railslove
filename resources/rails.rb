@@ -23,4 +23,4 @@ attribute :gems, :kind_of => [Array, Hash], :default => []
 attribute :bundler, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
 attribute :bundler_without_groups, :kind_of => [Array], :default => []
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
-attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => nil
+attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => true
