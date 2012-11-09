@@ -9,6 +9,7 @@ actions :deploy
 
 # :data_bag is the object to search
 # :cookbook is the name of the cookbook that the authorized_keys template should be found in
+attribute :siteconf, :kind_of => Hash, :required => true
 attribute :data_bag, :kind_of => String, :default => "applications", :name_attribute => true
 attribute :cookbook, :kind_of => String, :default => "railslove"
 

@@ -22,60 +22,57 @@
 # Usage:
 # railslove_deployment "applications" do
 #   action [:deploy]
+#   application <applicaton databag>
 # end
 
 
 action :deploy do
-  query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
+  deploy_config = siteconf[:deploy]
 
-  search("#{new_resource.data_bag}", "#{query}") do |application|
-    site = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
-    deploy_config = site[:deploy]
+  # set defaults
+  deploy_config[:user] ||= new_resource.user
+  deploy_config[:home] ||= new_resource.home
+  deploy_config[:deploy_group] ||= new_resource.deploy_group
+  deploy_config[:migrate] ||= new_resource.migrate unless deploy_config.key?(:migrate)
+  deploy_config[:migration_command] ||= new_resource.migration_command
 
-    # set defaults
-    deploy_config[:user] ||= new_resource.user
-    deploy_config[:home] ||= new_resource.home
-    deploy_config[:deploy_group] ||= new_resource.deploy_group
-    deploy_config[:migrate] ||= new_resource.migrate unless deploy_config.key?(:migrate)
-    deploy_config[:migration_command] ||= new_resource.migration_command
+  deploy_config[:precompile_assets] ||= new_resource.precompile_assets unless deploy_config.key?(:precompile_assets)
+  deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{siteconf[:id]}"
 
-    deploy_config[:precompile_assets] ||= new_resource.precompile_assets unless deploy_config.key?(:precompile_assets)
-    deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
+  deploy_config[:restart_command] ||= new_resource.restart_command
+  deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
 
-    deploy_config[:restart_command] ||= new_resource.restart_command
-    deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
+  deploy_config[:environment] ||= node.chef_environment
 
-    application site[:id] do
-      path deploy_config[:deploy_to]
-      owner deploy_config[:user]
-      group deploy_config[:group]
+  application siteconf[:id] do
+    path deploy_config[:deploy_to]
+    owner deploy_config[:user]
+    group deploy_config[:group]
 
-      environment_name node.chef_environment
-      environment({
-        "RAILS_ENV" => node.chef_environment,
-        "RACK_ENV"  => node.chef_environment
-      })
-      repository deploy_config[:repository]
-      revision deploy_config[:revision]
+    environment_name deploy_config[:environment]
+    environment({
+      "RAILS_ENV" => deploy_config[:environment],
+      "RACK_ENV"  => deploy_config[:environment]
+    })
+    repository deploy_config[:repository]
+    revision deploy_config[:revision]
 
-      deploy_key deploy_config[:deploy_key]
+    deploy_key deploy_config[:deploy_key]
 
-      symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}.merge(deploy_config[:symlinks]||{}))
+    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}.merge(deploy_config[:symlinks]||{}))
 
-      migrate deploy_config[:migrate]
-      migration_command deploy_config[:migration_command]
+    migrate deploy_config[:migrate]
+    migration_command deploy_config[:migration_command]
 
-      restart_command deploy_config[:restart_command]
-      rollback_on_error true
+    restart_command deploy_config[:restart_command]
+    rollback_on_error true
 
-      if deploy_config[:application_type] == "rails"
-        railslove_rails do
-          gems %w(bundler rake)
-          bundler true
-          precompile_assets deploy_config[:precompile_assets]
-        end
+    if deploy_config[:application_type] == "rails"
+      railslove_rails do
+        gems %w(bundler rake)
+        bundler true
+        precompile_assets deploy_config[:precompile_assets]
       end
-
     end
 
   end

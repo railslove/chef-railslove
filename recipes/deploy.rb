@@ -17,7 +17,14 @@
 # limitations under the License.
 #
 
-railslove_deployment "applications" do
-  action [:deploy]
+query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
+search(:applications, query) do |application|
+  site_hash = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
+
+  railslove_deployment "applications" do
+    action [:deploy]
+    siteconf site_hash
+  end
+
 end
 
