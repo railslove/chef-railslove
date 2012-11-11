@@ -30,12 +30,12 @@ action :before_migrate do
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
     directory "#{new_resource.path}/shared/vendor_bundle" do
-      user new_resource.user
+      owner new_resource.user
       group new_resource.group
       mode '0755'
     end
     directory "#{new_resource.release_path}/vendor" do
-      user new_resource.user
+      owner new_resource.user
       group new_resource.group
       mode '0755'
     end
