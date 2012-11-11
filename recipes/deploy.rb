@@ -25,9 +25,13 @@ query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
 search(:applications, query) do |application|
   site_hash = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
 
-  railslove_deployment "applications" do
-    action [:deploy]
-    site_config site_hash
+  if site_hash[:deploy]
+    railslove_deployment "applications" do
+      action [:deploy]
+      site_config site_hash
+    end
+  else
+    Chef::Log.warn("missing deploy config for #{site_hash[:id]}")
   end
 
 end
