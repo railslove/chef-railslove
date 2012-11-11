@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 #
+#
+
 include Chef::Resource::ApplicationBase
 
 attribute :gems, :kind_of => [Array, Hash], :default => ["bundler", "rake"]

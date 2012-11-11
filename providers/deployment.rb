@@ -74,8 +74,6 @@ action :deploy do
         gems %w(bundler rake)
         bundler true
         precompile_assets deploy_config[:precompile_assets]
-        user deploy_config[:user]
-        group deploy_config[:group]
       end
     end
 
