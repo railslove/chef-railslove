@@ -21,13 +21,5 @@
 # matches one of the node's roles to actually be added by the action.
 actions :create, :remove
 
-# :data_bag is the object to search
-# :certificate_data_bag is the object to look for certificates
-# :cookbook is the name of the cookbook that the authorized_keys template should be found in
-attribute :data_bag, :kind_of => String, :default => "applications", :name_attribute => true
-attribute :cookbook, :kind_of => String, :default => "railslove"
+include RailsloveSharedAttributes
 
-# these are default values, which should actually be definded in the application databag - see deployment resource
-attribute :user, :kind_of => String, :default => "rails"
-attribute :home, :kind_of => String, :default => "/srv/www"
-attribute :deploy_group, :kind_of => String, :default => "deployer"

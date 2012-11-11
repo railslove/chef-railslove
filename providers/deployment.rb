@@ -27,7 +27,7 @@
 
 
 action :deploy do
-  deploy_config = new_resource.site_config[:deploy]
+  deploy_config = new_resource.site_config[:deploy] || {}
 
   # set defaults
   deploy_config[:user] ||= new_resource.user

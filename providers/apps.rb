@@ -50,11 +50,11 @@ action :remove do
   query = "NOT (#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
   Chef::Log.info("Running query: #{query}")
   search("#{new_resource.data_bag}", "#{query}") do |site|
-    if deploy_config = site[:deploy]
-      deploy_config[:home] ||= new_resource.home
-      deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
-      execute("rm -rf #{deploy_config[:deploy_to]}")
-    end
+    deploy_config = site[:deploy] || {}
+    deploy_config[:home] ||= new_resource.home
+    deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
+
+    execute("rm -rf #{deploy_config[:deploy_to]}")
   end
 end
 
@@ -64,7 +64,7 @@ action :create do
 
   search("#{new_resource.data_bag}", "#{query}") do |item|
     site = Chef::Mixin::DeepMerge.merge(item.to_hash, (item[node.chef_environment] || {}))
-    deploy_config = site[:deploy]
+    deploy_config = site[:deploy] || {}
 
     # set defaults
     deploy_config[:user] ||= new_resource.user
