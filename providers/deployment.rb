@@ -42,6 +42,7 @@ action :deploy do
   deploy_config[:restart_command] ||= new_resource.restart_command
   deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
 
+  deploy_config[:revision] ||= new_resource.revision
   deploy_config[:environment] ||= node.chef_environment
 
   application new_resource.site_config[:id] do
