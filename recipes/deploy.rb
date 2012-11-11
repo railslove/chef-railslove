@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+# make sure the users and directories are created
+include_recipe "railslove::manage"
+
+
 query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
 search(:applications, query) do |application|
   site_hash = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
