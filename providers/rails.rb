@@ -30,12 +30,12 @@ action :before_migrate do
   if new_resource.bundler
     Chef::Log.info "Running bundle install"
     directory "#{new_resource.path}/shared/vendor_bundle" do
-      owner new_resource.user
+      owner new_resource.owner
       group new_resource.group
       mode '0755'
     end
     directory "#{new_resource.release_path}/vendor" do
-      owner new_resource.user
+      owner new_resource.owner
       group new_resource.group
       mode '0755'
     end
@@ -50,7 +50,7 @@ action :before_migrate do
     bundler_deployment = ::File.exists?(::File.join(new_resource.release_path, "Gemfile.lock"))
     execute "#{bundle_command} install --path=vendor/bundle #{bundler_deployment ? "--deployment " : ""}--without #{common_groups}" do
       cwd new_resource.release_path
-      user new_resource.user
+      user new_resource.owner
       environment new_resource.environment
     end
   end
@@ -70,7 +70,7 @@ action :before_symlink do
     command = "#{bundle_command} exec #{command}" if new_resource.bundler
     execute command do
       cwd new_resource.release_path
-      user new_resource.user
+      user new_resource.owner
       environment new_resource.environment
     end
   end
