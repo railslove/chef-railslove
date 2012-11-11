@@ -27,7 +27,7 @@
 
 
 action :deploy do
-  deploy_config = siteconf[:deploy]
+  deploy_config = new_resource.site_config[:deploy]
 
   # set defaults
   deploy_config[:user] ||= new_resource.user
@@ -37,14 +37,14 @@ action :deploy do
   deploy_config[:migration_command] ||= new_resource.migration_command
 
   deploy_config[:precompile_assets] ||= new_resource.precompile_assets unless deploy_config.key?(:precompile_assets)
-  deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{siteconf[:id]}"
+  deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{new_resource.site_config[:id]}"
 
   deploy_config[:restart_command] ||= new_resource.restart_command
   deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
 
   deploy_config[:environment] ||= node.chef_environment
 
-  application siteconf[:id] do
+  application new_resource.site_config[:id] do
     path deploy_config[:deploy_to]
     owner deploy_config[:user]
     group deploy_config[:group]

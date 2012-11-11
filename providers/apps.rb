@@ -69,8 +69,31 @@ action :create do
     # set defaults
     deploy_config[:user] ||= new_resource.user
     deploy_config[:home] ||= new_resource.home
+    deploy_config[:deploy_group] ||= new_resource.deploy_group
 
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
+
+    # create user
+    user deploy_config[:user] do
+      home deploy_config[:home]
+      shell "/bin/bash"
+      manage_home true
+    end
+
+    # create .ssh directory and upload authorized keys
+    directory "#{deploy_config[:home]}/.ssh" do
+      owner deploy_config[:user]
+      group deploy_config[:user]
+      mode "0700"
+    end
+    authorized_keys = search(:users, "groups:#{deploy_config[:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
+    template "#{deploy_config[:home]}/.ssh/authorized_keys" do
+      source "authorized_keys.erb"
+      owner deploy_config[:user]
+      group deploy_config[:user]
+      mode "0600"
+      variables :ssh_keys => authorized_keys.flatten
+    end
 
     # as recursive only applies the perms to the top-most directory we have to
     # be it the hard way.

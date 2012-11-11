@@ -23,7 +23,7 @@ search(:applications, query) do |application|
 
   railslove_deployment "applications" do
     action [:deploy]
-    siteconf site_hash
+    site_config site_hash
   end
 
 end

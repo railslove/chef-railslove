@@ -30,3 +30,4 @@ attribute :cookbook, :kind_of => String, :default => "railslove"
 # these are default values, which should actually be definded in the application databag - see deployment resource
 attribute :user, :kind_of => String, :default => "rails"
 attribute :home, :kind_of => String, :default => "/srv/www"
+attribute :deploy_group, :kind_of => String, :default => "deployer"
