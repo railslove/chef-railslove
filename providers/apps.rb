@@ -68,6 +68,8 @@ action :create do
 
     # set defaults
     deploy_config[:user] ||= new_resource.user
+    deploy_config[:group] ||= new_resource.group
+
     deploy_config[:home] ||= new_resource.home
     deploy_config[:deploy_group] ||= new_resource.deploy_group
 
@@ -83,14 +85,14 @@ action :create do
     # create .ssh directory and upload authorized keys
     directory "#{deploy_config[:home]}/.ssh" do
       owner deploy_config[:user]
-      group deploy_config[:user]
+      group deploy_config[:group]
       mode "0700"
     end
     authorized_keys = search(:users, "groups:#{deploy_config[:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
     template "#{deploy_config[:home]}/.ssh/authorized_keys" do
       source "authorized_keys.erb"
       owner deploy_config[:user]
-      group deploy_config[:user]
+      group deploy_config[:group]
       mode "0600"
       variables :ssh_keys => authorized_keys.flatten
     end
@@ -99,18 +101,18 @@ action :create do
     # be it the hard way.
     directory "#{deploy_config[:deploy_to]}" do
       owner deploy_config[:user]
-      group deploy_config[:user]
+      group deploy_config[:group]
       mode "0775"
       recursive true
     end
     directory "#{deploy_config[:deploy_to]}/shared" do
       owner deploy_config[:user]
-      group deploy_config[:user]
+      group deploy_config[:group]
       mode "0775"
     end
     directory "#{deploy_config[:deploy_to]}/shared/system" do
       owner deploy_config[:user]
-      group deploy_config[:user]
+      group deploy_config[:group]
       mode "0775"
     end
 
@@ -118,7 +120,7 @@ action :create do
       template "#{deploy_config[:deploy_to]}/shared/database.yml" do
         source "database.yml.erb"
         owner deploy_config[:user]
-        group deploy_config[:user]
+        group deploy_config[:group]
         mode "0775"
         variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
       end
@@ -128,7 +130,7 @@ action :create do
       template "#{deploy_config[:deploy_to]}/shared/mongoid.yml" do
         source "mongoid.yml.erb"
         owner deploy_config[:user]
-        group deploy_config[:user]
+        group deploy_config[:group]
         mode "0775"
         variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
       end

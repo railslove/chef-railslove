@@ -31,6 +31,7 @@ action :deploy do
 
   # set defaults
   deploy_config[:user] ||= new_resource.user
+  deploy_config[:group] ||= new_resource.group
   deploy_config[:home] ||= new_resource.home
   deploy_config[:deploy_group] ||= new_resource.deploy_group
   deploy_config[:migrate] ||= new_resource.migrate unless deploy_config.key?(:migrate)
@@ -73,6 +74,8 @@ action :deploy do
         gems %w(bundler rake)
         bundler true
         precompile_assets deploy_config[:precompile_assets]
+        user deploy_config[:user]
+        group deploy_config[:group]
       end
     end
 
