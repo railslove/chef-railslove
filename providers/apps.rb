@@ -136,6 +136,21 @@ action :create do
       end
     end
 
+    if site[:delayed_job]
+      template "/etc/init/delayed_job_#{site[:id]}.conf" do
+        source "delayed_job.conf.erb"
+        variables(:application => site, :deployment => deploy_config)
+      end
+
+      sudo deploy_config[:user] do
+        user deploy_config[:user]
+        runas "root"
+        commands ["/usr/sbin/service delayed_job *"]
+        host "ALL"
+        nopasswd true
+      end
+    end
+
     logrotate_app site[:id] do
       cookbook "logrotate"
       path "#{deploy_config[:deploy_to]}/shared/log/*.log"
