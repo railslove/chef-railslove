@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 package "htop"
+package "iftop"
 package "vim"
 package "zsh"
 package "ack-grep"
