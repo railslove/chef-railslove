@@ -88,7 +88,7 @@ action :create do
       group deploy_config[:group]
       mode "0700"
     end
-    authorized_keys = search(:users, "groups:#{deploy_config[:deploy_group]} NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
+    authorized_keys = search(:users, "groups:#{deploy_config[:deploy_group]} OR groups:sysadmin NOT action:remove").inject([]){|keys, u| keys << u['ssh_keys']}
     template "#{deploy_config[:home]}/.ssh/authorized_keys" do
       source "authorized_keys.erb"
       owner deploy_config[:user]
