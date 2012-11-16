@@ -145,7 +145,7 @@ action :create do
       sudo deploy_config[:user] do
         user deploy_config[:user]
         runas "root"
-        commands ["/usr/sbin/service delayed_job *"]
+        commands ["/usr/sbin/service delayed_job_*"]
         host "ALL"
         nopasswd true
       end
