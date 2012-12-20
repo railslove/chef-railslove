@@ -29,12 +29,17 @@ package "libxslt-dev"
 package "openjdk-7-jre-headless"
 package "nodejs"
 package "imagemagick"
+package "libmagickwand-dev"
 
 package "libcurl3"
 package "libcurl3-gnutls"
 package "libcurl4-gnutls-dev"
 package "libcurl4-openssl-dev"
 package "libv8-dev"
+
+node[:railslove][:packages].each do |package|
+  package package
+end
 
 gem_package "bundler"
 gem_package "rake"
