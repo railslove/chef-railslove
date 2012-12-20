@@ -24,14 +24,18 @@ end
 
 def database_config(site)
   host = search("node", "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
-  Chef::Log.error("Got no database host!!!") unless host
 
-  config = case site[:db][:type]
-    when "mysql" then {:password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")}
-    when "postgresql" then {:password => host['postgresql']['password']['postgres'], :username => "postgres"}
+  if host
+    config = case site[:db][:type]
+      when "mysql" then {:password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")}
+      when "postgresql" then {:password => host['postgresql']['password']['postgres'], :username => "postgres"}
+    end
+    config.merge(:fqdn => host[:ipaddress])
+  else
+    Chef::Log.error("No host found! Trying config from data bag!")
+
+    site[:db]
   end
-
-  config.merge(:fqdn => host[:ipaddress])
 end
 
 def mongoid_config(site)
