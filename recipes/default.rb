@@ -44,6 +44,7 @@ end
 node[:railslove][:companies].each do |company|
   users_manage(company) do
     group_id 2300
+    group_name "sysadmin"
     action [ :remove, :create ]
   end
 end
