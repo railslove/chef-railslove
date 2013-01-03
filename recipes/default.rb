@@ -41,6 +41,13 @@ node[:railslove][:packages].each do |package|
   package package
 end
 
+node[:railslove][:companies].each do |company|
+  users_manage(company) do
+    group_id 2300
+    action [ :remove, :create ]
+  end
+end
+
 gem_package "bundler"
 gem_package "rake"
 gem_package "ruby-shadow"
