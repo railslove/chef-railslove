@@ -5,6 +5,6 @@ module RailsloveSharedAttributes
     klass.attribute :user, :kind_of => String, :default => "rails"
     klass.attribute :group, :kind_of => String, :default => "rails"
     klass.attribute :home, :kind_of => String, :default => "/srv/www/"
-    klass.attribute :deploy_group, :kind_of => String, :default => "deployer"
+    klass.attribute :deploy_group, :kind_of => Array, :default => ["railslove"]
   end
 end
