@@ -26,55 +26,19 @@
 node.set[:set_fqdn] = node.name + "." + node.chef_environment + ".#{node[:railslove][:domain]}"
 include_recipe "hostname"
 
-#load "inwx/Domrobot.rb"
-require "yaml"
+gem_package "fog"
 
-#addr = "api.ote.domrobot.com"
-addr = "api.domrobot.com"
+credentials = data_bag_item("aws", "route53")
 
-credentials = data_bag_item("inwx", "credentials")
+route53_record "create a record" do
+  name  node.set_fqdn
+  value node.ec2.public_ipv4
+  type  "A"
+  ttl 300
 
-user = credentials["login"]
-pass = credentials["password"]
+  zone_id               credentials["zone_id"]
+  aws_access_key_id     credentials["aws_access_key_id"]
+  aws_secret_access_key credentials["aws_secret_access_key"]
 
-domrobot = INWX::Domrobot.new(addr)
-
-result = domrobot.login(user,pass)
-
-content = node.ec2.public_ipv4
-name    = "#{node.name}.#{node.chef_environment}"
-domain  = node.railslove.domain
-
-object = "nameserver"
-method = "info"
-
-params = { :name => name, :domain => domain }
-
-result = domrobot.call(object, method, params)
-
-puts YAML::dump(result)
-if result["code"] == 1000
-  record  = result["resData"]["record"].first
-
-  object = "nameserver"
-  method = "updateRecord"
-
-  params = { :id => record["id"], :type => "A", :content => content, :name => name }
-
-  if record["content"] == content
-    puts "not updating..."
-  else
-    result = domrobot.call(object, method, params)
-
-    puts YAML::dump(result)
-  end
-else
-  object = "nameserver"
-  method = "createRecord"
-
-  params    = { :type => "A", :content => content, :name => name, :domain => domain }
-
-  result = domrobot.call(object, method, params)
-
-  puts YAML::dump(result)
+  action :create
 end
