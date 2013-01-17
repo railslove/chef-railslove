@@ -69,6 +69,9 @@ action :deploy do
     restart_command deploy_config[:restart_command]
     rollback_on_error true
 
+    before_restart "deploy/before_restart.rb"
+    after_restart "deploy/after_restart.rb"
+
     if deploy_config[:application_type] == "rails"
       railslove_rails do
         gems %w(bundler rake)
