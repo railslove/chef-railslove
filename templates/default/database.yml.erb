@@ -5,5 +5,5 @@
   username: <%= @host[:username] %>
   password: <%= @host[:password] %>
   encoding: utf8
-  pool: 5
+  pool: <%= @host[:pool] || 5 %>
   reconnect: true

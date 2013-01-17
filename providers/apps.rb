@@ -30,10 +30,9 @@ def database_config(site)
       when "mysql" then {:password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")}
       when "postgresql" then {:password => host['postgresql']['password']['postgres'], :username => "postgres"}
     end
-    config.merge(:fqdn => host[:ipaddress])
+    config.merge(:fqdn => host[:ipaddress], :pool => (site[:db][:pool] || 5))
   else
     Chef::Log.error("No host found! Trying config from data bag!")
-
     site[:db]
   end
 end
