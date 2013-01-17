@@ -77,11 +77,11 @@ action :before_symlink do
 
 end
 
-#action :before_restart do
-#end
+action :before_restart do
+end
 
-#action :after_restart do
-#end
+action :after_restart do
+end
 
 
 protected
