@@ -22,6 +22,17 @@ def initialize(*args)
   @action = :create
 end
 
+def database_adapter_mapping
+  @mapping = Hash.new(->(host) { Chef::Log.error("no adapter mapping found!"); {} })
+  @mapping.merge!({
+    :mysql        => ->(host) { {:host => host[:ipaddress], :password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")} },
+    :postgresql   => ->(host) { {:host => host[:ipaddress], :password => host['postgresql']['password']['postgres'], :username => "postgres"} },
+    :mongoid      => ->(host) { {:host => host[:ipaddress] } },
+    :redis        => ->(host) { {:host => host[:ipaddress] } }
+  })
+  @mapping
+end
+
 def database_config(site)
   host = search("node", "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
 
@@ -139,6 +150,25 @@ action :create do
         group deploy_config[:group]
         mode "0775"
         variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
+      end
+    end
+
+    if site[:configs]
+      site[:configs].each do |filename, attributes|
+        if role = attributes.delete(:role_of_host_node)
+          if host = search("node", "roles:*#{role} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
+            attributes.merge!(database_mapping[attributes[:adapter]].call(host))
+          else
+            Chef::Log.error("host node was requested but no host with role #{role} and tag #{site[:id]}) was found!")
+          end
+        end
+        template "#{deploy_config[:deploy_to]}/shared/#{filename}.yml" do
+          source "config.yml.erb"
+          owner deploy_config[:user]
+          group deploy_config[:group]
+          mode "0775"
+          variables(:attributes => attributes, :environment => site[:rails_env])
+        end
       end
     end
 
