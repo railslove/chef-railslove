@@ -61,7 +61,7 @@ action :deploy do
 
     deploy_key deploy_config[:deploy_key]
 
-    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}.merge(deploy_config[:symlinks]||{}))
+    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log", "*.yml" => "config/"}.merge(deploy_config[:symlinks]||{}))
 
     migrate deploy_config[:migrate]
     migration_command deploy_config[:migration_command]
