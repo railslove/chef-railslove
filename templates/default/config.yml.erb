@@ -1,0 +1,4 @@
+<%= @environment || node.chef_environment %>:
+  @attributes.each do |key, value|
+  <%= key %>: <% value %>
+  <% end %>
