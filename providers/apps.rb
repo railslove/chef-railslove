@@ -167,7 +167,7 @@ action :create do
           owner deploy_config[:user]
           group deploy_config[:group]
           mode "0775"
-          variables(:attributes => attributes, :environment => site[:rails_env])
+          variables(:yaml => Psych.dump(site[:rails_env] => attributes))
         end
       end
     end
