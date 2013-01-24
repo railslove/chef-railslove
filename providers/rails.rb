@@ -12,7 +12,7 @@ action :before_compile do
   })
 
   new_resource.symlink_before_migrate.update({
-    "database.yml" => "config/database.yml"
+    "*.yml" => "config/"
   })
 
 end
