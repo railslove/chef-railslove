@@ -167,7 +167,7 @@ action :create do
           owner deploy_config[:user]
           group deploy_config[:group]
           mode "0775"
-          variables(:yaml => Psych.dump(site[:rails_env] => attributes))
+          variables(:yaml => Psych.dump({(site[:rails_env] || node.chef_environment) => attributes.to_hash}))
         end
       end
     end
