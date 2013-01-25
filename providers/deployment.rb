@@ -66,6 +66,7 @@ action :deploy do
     Chef::Log.error(deploy_config["symlinks"].inspect)
 
     symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}.merge(deploy_config[:symlinks]||{}))
+    symlink_before_migrate((deploy_config[:symlinks]||{}))
     Chef::Log.error(symlinks.inspect)
 
     migrate deploy_config[:migrate]
