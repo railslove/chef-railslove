@@ -61,13 +61,7 @@ action :deploy do
 
     deploy_key deploy_config[:deploy_key]
 
-    Chef::Log.error("--SYMLINKS")
-    Chef::Log.error(deploy_config[:symlinks].inspect)
-    Chef::Log.error(deploy_config["symlinks"].inspect)
-
-    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}.merge(deploy_config[:symlinks]||{}))
     symlink_before_migrate((deploy_config[:symlinks]||{}))
-    Chef::Log.error(symlinks.inspect)
 
     migrate deploy_config[:migrate]
     migration_command deploy_config[:migration_command]
