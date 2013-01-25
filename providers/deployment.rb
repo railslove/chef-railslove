@@ -62,6 +62,7 @@ action :deploy do
     deploy_key deploy_config[:deploy_key]
 
     symlink_before_migrate((deploy_config[:symlinks]||{}))
+    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"})
 
     migrate deploy_config[:migrate]
     migration_command deploy_config[:migration_command]
