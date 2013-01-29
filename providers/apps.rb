@@ -26,6 +26,7 @@ def database_adapter_mapping
   @mapping = Hash.new(Proc.new {|host| Chef::Log.error("no adapter mapping found!"); {} })
   @mapping.merge!({
     "mysql"        => Proc.new { |host| {:host => host[:ipaddress], :password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")} },
+    "mysql2"        => Proc.new { |host| {:host => host[:ipaddress], :password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")} },
     "postgresql"   => Proc.new { |host| { :host => host[:ipaddress], :password => host['postgresql']['password']['postgres'], :username => "postgres"} },
     "mongoid"      => Proc.new { |host| {:host => host[:ipaddress] } },
     "redis"        => Proc.new { |host| {:host => host[:ipaddress] } }
