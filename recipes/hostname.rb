@@ -32,7 +32,7 @@ credentials = data_bag_item("aws", "route53")
 
 route53_record "create a record" do
   name  node.set_fqdn
-  value node.ec2.public_ipv4
+  value node.ec2["public_ipv4"]
   type  "A"
   ttl 300
 
@@ -41,6 +41,5 @@ route53_record "create a record" do
   aws_secret_access_key credentials["aws_secret_access_key"]
 
   action :create
-
   only_if { node.ec2.attribute?("public_ipv4") }
 end

@@ -61,13 +61,17 @@ action :deploy do
 
     deploy_key deploy_config[:deploy_key]
 
-    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}.merge(deploy_config[:symlinks]||{}))
+    symlink_before_migrate((deploy_config[:symlinks]||{}))
+    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"})
 
     migrate deploy_config[:migrate]
     migration_command deploy_config[:migration_command]
 
     restart_command deploy_config[:restart_command]
     rollback_on_error true
+
+    before_restart "deploy/before_restart.rb"
+    after_restart "deploy/after_restart.rb"
 
     if deploy_config[:application_type] == "rails"
       railslove_rails do
