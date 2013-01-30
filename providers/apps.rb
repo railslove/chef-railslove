@@ -161,7 +161,7 @@ action :create do
           if host = search("node", "roles:*#{role} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
             attributes.merge!(database_adapter_mapping[attributes[:adapter]].call(host))
           else
-            Chef::Log.error("host node was requested but no host with role #{role} and tag #{site[:id]}) was found!")
+            Chef::Log.error("host node was requested but no host with role #{role} and tag #{site[:id]}was found!")
           end
         end
         template "#{deploy_config[:deploy_to]}/shared/#{filename}.yml" do
