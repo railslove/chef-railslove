@@ -169,7 +169,10 @@ action :create do
           owner deploy_config[:user]
           group deploy_config[:group]
           mode "0775"
-          variables(:yaml => Psych.dump({(site[:rails_env] || node.chef_environment) => attributes.to_hash}))
+          file_content = Psych.dump({(site[:rails_env] || node.chef_environment) => attributes.to_hash})
+          Chef::Log.info("writing config file: #{filename} with content:")
+          Chef::Log.info(file_content)
+          variables(:yaml => file_content)
         end
       end
     end
