@@ -29,7 +29,8 @@ def database_adapter_mapping
     "mysql2"        => Proc.new { |host| {:host => host[:ipaddress], :password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")} },
     "postgresql"   => Proc.new { |host| { :host => host[:ipaddress], :password => host['postgresql']['password']['postgres'], :username => "postgres"} },
     "mongoid"      => Proc.new { |host| {:host => host[:ipaddress] } },
-    "redis"        => Proc.new { |host| {:host => host[:ipaddress] } }
+    "redis"        => Proc.new { |host| {:host => host[:ipaddress] } },
+    "memcached"    => Proc.new { |host| {:host => host[:ipaddress], :port => host[:memcached][:port] } }
   })
   @mapping
 end
