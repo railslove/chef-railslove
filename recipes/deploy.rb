@@ -19,6 +19,7 @@
 
 # make sure the users and directories are created
 include_recipe "railslove::manage"
+include_recipe 'campfire'
 
 
 query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"

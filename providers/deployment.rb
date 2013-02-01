@@ -83,6 +83,13 @@ action :deploy do
 
   end
 
+  campfire_msg 'deploy notification' do
+    subdomain node.railslove.campfire.subdomain
+    room node.railslove.campfire.room
+    token node.railslove.campfire.token
+    message "wahoo, deployed #{new_resource.site_config[:id]} to revision #{deploy_config[:revision]}"
+    only_if { node.railslove.attribute?(:campfire) }
+  end
 end
 
 
