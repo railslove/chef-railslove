@@ -73,6 +73,19 @@ action :deploy do
     before_restart "deploy/before_restart.rb" if ::File.exists?(::File.join("deploy", "before_restart.rb"))
     after_restart "deploy/after_restart.rb" if ::File.exists?(::File.join("deploy", "after_restart.rb"))
 
+    if deploy_config[:compfire]
+      after_restart do
+        begin
+          Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
+          room = Broach::Room.find_by_name(deploy_config[:campfire][:room])
+          room.speak("wahoo, deployed #{new_resource.site_config[:id]} to revision #{deploy_config[:revision]}")
+        rescue => e
+          Chef::Log.info("Campfire: failed to connect to campfire.")
+          Chef::Log.debug("Campfire: #{e.inspect}")
+        end
+      end
+    end
+
     if deploy_config[:application_type] == "rails"
       railslove_rails do
         gems %w(bundler rake)
@@ -81,14 +94,6 @@ action :deploy do
       end
     end
 
-  end
-
-  campfire_msg 'deploy notification' do
-    subdomain node.railslove.campfire.subdomain
-    room node.railslove.campfire.room
-    token node.railslove.campfire.token
-    message "wahoo, deployed #{new_resource.site_config[:id]} to revision #{deploy_config[:revision]}"
-    only_if { node.railslove.attribute?(:campfire) }
   end
 end
 
