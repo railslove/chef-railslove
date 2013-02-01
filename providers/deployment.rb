@@ -73,7 +73,7 @@ action :deploy do
     before_restart "deploy/before_restart.rb" if ::File.exists?(::File.join("deploy", "before_restart.rb"))
     after_restart "deploy/after_restart.rb" if ::File.exists?(::File.join("deploy", "after_restart.rb"))
 
-    if deploy_config[:compfire]
+    if deploy_config[:campfire]
       after_restart do
         begin
           Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
