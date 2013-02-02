@@ -28,6 +28,7 @@
 
 action :deploy do
   deploy_config = new_resource.site_config[:deploy] || {}
+  application_name = new_resource.site_config[:id] # make the name available for the campfire notification
 
   # set defaults
   deploy_config[:user] ||= new_resource.user
@@ -79,7 +80,7 @@ action :deploy do
           require "broach"
           Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
           room = Broach::Room.find_by_name(deploy_config[:campfire][:room])
-          room.speak("wahoo, deployed #{new_resource.site_config[:id]} to revision #{deploy_config[:revision]}")
+          room.speak("wahoo, deployed #{application_name} to revision #{deploy_config[:revision]}! #{deploy_config[:commit_message]}")
         rescue => e
           Chef::Log.info("Campfire: failed to connect to campfire.")
           Chef::Log.debug("Campfire: #{e.inspect}")
