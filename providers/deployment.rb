@@ -76,6 +76,7 @@ action :deploy do
     if deploy_config[:campfire]
       after_restart do
         begin
+          require "broach"
           Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
           room = Broach::Room.find_by_name(deploy_config[:campfire][:room])
           room.speak("wahoo, deployed #{new_resource.site_config[:id]} to revision #{deploy_config[:revision]}")
