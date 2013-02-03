@@ -41,5 +41,5 @@ route53_record "create a record" do
   aws_secret_access_key credentials["aws_secret_access_key"]
 
   action :create
-  only_if { node.ec2.attribute?("public_ipv4") }
+  only_if { node.attribute?(:ec2) and node.ec2.attribute?("public_ipv4") }
 end
