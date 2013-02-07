@@ -134,6 +134,16 @@ action :create do
       group deploy_config[:group]
       mode "0775"
     end
+     directory "#{deploy_config[:deploy_to]}/shared/log" do
+      owner deploy_config[:user]
+      group deploy_config[:group]
+      mode "0775"
+    end
+    directory "#{deploy_config[:deploy_to]}/shared/pids" do
+      owner deploy_config[:user]
+      group deploy_config[:group]
+      mode "0775"
+    end
 
     if site[:db] && ["mysql", "postgresql"].include?(site[:db][:type])
       template "#{deploy_config[:deploy_to]}/shared/database.yml" do
