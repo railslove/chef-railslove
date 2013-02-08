@@ -74,9 +74,24 @@ action :deploy do
     restart_command deploy_config[:restart_command]
     rollback_on_error true
 
-    before_symlink "deploy/before_symlink.rb"
-    before_restart "deploy/before_restart.rb"
-    after_restart "deploy/after_restart.rb"
+    before_symlink do
+      callback_file = "#{release_path}/deploy/before_symlink.rb"
+      if ::File.exist?(callback_file)
+        run_callback_from_file(callback_file)
+      end
+    end
+    before_restart do
+      callback_file = "#{release_path}/deploy/before_restart.rb"
+      if ::File.exist?(callback_file)
+        run_callback_from_file(callback_file)
+      end
+    end
+    after_restart do
+      callback_file = "#{release_path}/deploy/after_restart.rb"
+      if ::File.exist?(callback_file)
+        run_callback_from_file(callback_file)
+      end
+    end
 
     if deploy_config[:campfire]
       after_restart do
