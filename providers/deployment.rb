@@ -74,6 +74,7 @@ action :deploy do
     restart_command deploy_config[:restart_command]
     rollback_on_error true
 
+    before_symlink "deploy/before_symlink.rb"
     before_restart "deploy/before_restart.rb"
     after_restart "deploy/after_restart.rb"
 
