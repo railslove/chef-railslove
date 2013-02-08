@@ -91,10 +91,8 @@ action :deploy do
       if ::File.exist?(callback_file)
         run_callback_from_file(callback_file)
       end
-    end
 
-    if deploy_config[:campfire]
-      after_restart do
+      if deploy_config[:campfire]
         begin
           require "broach"
           Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
