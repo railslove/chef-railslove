@@ -55,9 +55,7 @@ action :deploy do
     environment_name deploy_config[:environment]
     environment({
       "RAILS_ENV" => deploy_config[:environment],
-      "RACK_ENV"  => deploy_config[:environment],
-      'LC_ALL' => 'en_GB.UTF-8',
-      'LANG'   => 'en_GB.UTF-8'
+      "RACK_ENV"  => deploy_config[:environment]
     })
 
     repository deploy_config[:repository]
@@ -112,9 +110,7 @@ action :deploy do
       railslove_rails do
         environment({
           "RAILS_ENV" => deploy_config[:environment],
-          "RACK_ENV"  => deploy_config[:environment],
-          'LC_ALL' => 'en_GB.UTF-8',
-          'LANG'   => 'en_GB.UTF-8'
+          "RACK_ENV"  => deploy_config[:environment]
         })
         gems %w(bundler rake)
         bundler true
