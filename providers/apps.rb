@@ -169,7 +169,7 @@ action :create do
       site[:configs].each do |filename, attributes|
         if role = attributes.delete(:role_of_host_node)
           if host = search("node", "roles:*#{role} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
-            attributes.merge!(database_adapter_mapping[attributes[:adapter]].call(host))
+            attributes = (database_adapter_mapping[attributes[:adapter]].call(host)).inject({}) {|m,k| m[k.first.to_s]=k.last;m }.merge(attributes)
           else
             Chef::Log.error("host node was requested but no host with role #{role} and tag #{site[:id]}was found!")
           end
