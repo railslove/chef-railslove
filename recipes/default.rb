@@ -30,6 +30,7 @@ package "openjdk-7-jre-headless"
 package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
+package "mailutils"
 
 package "libcurl3"
 package "libcurl3-gnutls"
