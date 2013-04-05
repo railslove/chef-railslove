@@ -19,7 +19,6 @@
 
 # Searches data bag "users" for sudo attribute "true".
 # Places sudoers file for returned users.
-node['authorization']['sudo']['include_sudoers_d'] = true
 railslove_sudoers "users" do
   action [ :remove, :create ]
 end
