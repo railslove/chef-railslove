@@ -50,6 +50,10 @@ node[:railslove][:companies].each do |company|
   end
 end
 
+file "/etc/update-motd.d/50-landscape-sysinfo" do
+  action :delete
+end
+
 gem_package "bundler"
 gem_package "rake"
 gem_package "ruby-shadow"
