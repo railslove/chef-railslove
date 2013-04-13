@@ -36,8 +36,10 @@ def database_adapter_mapping
 end
 
 def database_config(site)
-  host = search("node", "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
+  query = "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}"
+  host = search("node", query).first
 
+  Chef::Log.info("running: #{query}")
   if host
     config = case site[:db][:type]
       when "mysql" then {:password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")}
