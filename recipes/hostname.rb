@@ -20,7 +20,7 @@
 node.set[:set_fqdn] = node.name + "." + node.chef_environment + ".#{node[:railslove][:domain]}"
 include_recipe "hostname"
 
-if default[:railslove][:manage_dns_records]
+if node[:railslove][:manage_dns_records]
   gem_package "fog"
   credentials = data_bag_item("aws", "route53")
 
