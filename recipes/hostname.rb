@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-node.set[:set_fqdn] = node.name + "." + node.chef_environment + ".#{node[:railslove][:domain]}"
+node.set['set_fqdn'] = node.name + "." + node.chef_environment + ".#{node['railslove']['domain']}"
 include_recipe "hostname"
 
-if node[:railslove][:manage_dns_records]
+if node['railslove']['manage_dns_records']
   gem_package "fog"
   credentials = data_bag_item("aws", "route53")
 
-  if node.attribute?(:ec2) and node.ec2.attribute?("public_ipv4")
+  if node.attribute?('ec2') and node.ec2.attribute?('public_ipv4')
     route53_record "create a record" do
       name  node.set_fqdn
       value node.ec2["public_ipv4"]

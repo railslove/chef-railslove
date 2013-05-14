@@ -38,11 +38,11 @@ package "libcurl4-gnutls-dev"
 package "libcurl4-openssl-dev"
 package "libv8-dev"
 
-node[:railslove][:packages].each do |package|
+node['railslove']['packages'].each do |package|
   package package
 end
 
-node[:railslove][:companies].each do |company|
+node['railslove']['companies'].each do |company|
   users_manage(company) do
     group_id 2300
     group_name "sysadmin"
