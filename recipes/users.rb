@@ -17,9 +17,13 @@
 # limitations under the License.
 #
 #
-query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
+if Chef::Config[:solo]
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+end
 
-search(:applications, "#{query}") do |application|
+query = "(#{node['roles'].map{|r| "roles:#{r}" }.join(" OR ")})"
+
+search(:applications, query) do |application|
   site = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
   deploy_config = site[:deploy]
 

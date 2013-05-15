@@ -20,6 +20,7 @@
 # Data bag application object needs a "roles": ["<some_role>"] tag, that
 # matches one of the node's roles to actually be added by the action.
 actions :create, :remove
+default_action :create
 
 include RailsloveSharedAttributes
 

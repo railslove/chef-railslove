@@ -18,6 +18,7 @@
 #
 
 actions :create, :remove
+default_action :create
 
 attribute :data_bag, :kind_of => String, :default => "users", :name_attribute => true
 attribute :sudo_attribute, :kind_of => String, :default => "sudo"

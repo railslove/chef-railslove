@@ -18,6 +18,8 @@
 #
 #
 #
+actions :before_compile, :before_deploy, :before_migrate, :before_symlink, :before_restart, :after_restart
+default_action :before_deploy
 
 include Chef::Resource::ApplicationBase
 

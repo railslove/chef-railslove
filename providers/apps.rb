@@ -17,11 +17,6 @@
 # limitations under the License.
 #
 
-def initialize(*args)
-  super
-  @action = :create
-end
-
 def database_adapter_mapping
   @mapping = Hash.new(Proc.new {|host| Chef::Log.error("no adapter mapping found!"); {} })
   @mapping.merge!({
@@ -37,6 +32,7 @@ end
 
 def database_config(site)
   query = "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}"
+
   host = search("node", query).first
 
   Chef::Log.info("running: #{query}")
@@ -65,22 +61,32 @@ def mongoid_config(site)
 end
 
 action :remove do
-  query = "NOT (#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
+  if Chef::Config[:solo]
+    Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+  end
+
+  query = "NOT (#{node['roles'].map{|r| "roles:#{r}" }.join(" OR ")})"
   Chef::Log.info("Running query: #{query}")
-  search("#{new_resource.data_bag}", "#{query}") do |site|
+  search(new_resource.data_bag, query) do |site|
     deploy_config = site[:deploy] || {}
     deploy_config[:home] ||= new_resource.home
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
 
     execute("rm -rf #{deploy_config[:deploy_to]}")
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :create do
-  query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
+  if Chef::Config[:solo]
+    Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+  end
+
+  query = "(#{node['roles'].map{|r| "roles:#{r}" }.join(" OR ")})"
   Chef::Log.info("Running query: #{query}")
 
-  search("#{new_resource.data_bag}", "#{query}") do |item|
+  search(new_resource.data_bag, query) do |item|
     site = Chef::Mixin::DeepMerge.merge(item.to_hash, (item[node.chef_environment] || {}))
     deploy_config = site[:deploy] || {}
 
@@ -120,7 +126,7 @@ action :create do
 
     # as recursive only applies the perms to the top-most directory we have to
     # be it the hard way.
-    directory "#{deploy_config[:deploy_to]}" do
+    directory deploy_config[:deploy_to] do
       owner deploy_config[:user]
       group deploy_config[:group]
       mode "0775"
@@ -147,24 +153,22 @@ action :create do
       mode "0775"
     end
 
-    if site[:db] && ["mysql", "postgresql"].include?(site[:db][:type])
-      template "#{deploy_config[:deploy_to]}/shared/database.yml" do
-        source "database.yml.erb"
-        owner deploy_config[:user]
-        group deploy_config[:group]
-        mode "0775"
-        variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
-      end
+    template "#{deploy_config[:deploy_to]}/shared/database.yml" do
+      source "database.yml.erb"
+      owner deploy_config[:user]
+      group deploy_config[:group]
+      mode "0775"
+      variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
+      only_if { site[:db] && ["mysql", "postgresql"].include?(site[:db][:type]) }
     end
 
-    if site[:db] && ["mongoid"].include?(site[:db][:adapter])
-      template "#{deploy_config[:deploy_to]}/shared/mongoid.yml" do
-        source "mongoid.yml.erb"
-        owner deploy_config[:user]
-        group deploy_config[:group]
-        mode "0775"
-        variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
-      end
+    template "#{deploy_config[:deploy_to]}/shared/mongoid.yml" do
+      source "mongoid.yml.erb"
+      owner deploy_config[:user]
+      group deploy_config[:group]
+      mode "0775"
+      variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
+      only_if { site[:db] && ["mongoid"].include?(site[:db][:adapter]) }
     end
 
     if site[:configs]
@@ -211,5 +215,6 @@ action :create do
       rotate 30
     end
 
+    new_resource.updated_by_last_action(true)
   end
 end

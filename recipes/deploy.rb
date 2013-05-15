@@ -20,13 +20,17 @@
 # make sure the users and directories are created
 include_recipe "railslove::manage"
 
+if Chef::Config[:solo]
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+end
+
 # install broach for campfire notification
 broach = chef_gem 'broach' do
   action :nothing
 end
 broach.run_action(:install)
 
-query = "(#{node[:roles].map{|r| "roles:#{r}" }.join(" OR ")})"
+query = "(#{node['roles'].map{|r| "roles:#{r}" }.join(" OR ")})"
 search(:applications, query) do |application|
   site_hash = Chef::Mixin::DeepMerge.merge(application.to_hash, (application[node.chef_environment] || {}))
 

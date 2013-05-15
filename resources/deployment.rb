@@ -6,6 +6,7 @@
 #
 
 actions :deploy
+default_action :deploy
 
 include RailsloveSharedAttributes
 

@@ -24,16 +24,26 @@ def initialize(*args)
 end
 
 action :remove do
-  search("#{new_resource.data_bag}", "NOT #{new_resource.sudo_attribute}:true") do |u|
+  if Chef::Config[:solo]
+    Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+  end
+
+  search(new_resource.data_bag, "NOT #{new_resource.sudo_attribute}:true") do |u|
     sudo u['id'] do
       action :remove
       only_if do ::File.exists?("/etc/sudoers.d/#{u['id']}") end
     end
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :create do
-  search("#{new_resource.data_bag}", "#{new_resource.sudo_attribute}:true") do |u|
+  if Chef::Config[:solo]
+    Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+  end
+
+  search(new_resource.data_bag, "#{new_resource.sudo_attribute}:true") do |u|
     sudo u['id'] do
       user u['id']
       host "ALL"
@@ -41,4 +51,6 @@ action :create do
       nopasswd new_resource.nopasswd
     end
   end
+
+  new_resource.updated_by_last_action(true)
 end

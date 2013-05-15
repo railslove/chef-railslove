@@ -15,6 +15,7 @@ action :before_compile do
     "database.yml" => "config/database.yml"
   })
 
+  new_resource.updated_by_last_action(true)
 end
 
 action :before_deploy do
@@ -23,6 +24,7 @@ action :before_deploy do
 
   install_gems
 
+  new_resource.updated_by_last_action(true)
 end
 
 action :before_migrate do
@@ -56,6 +58,7 @@ action :before_migrate do
     end
   end
 
+  new_resource.updated_by_last_action(true)
 end
 
 action :before_symlink do
@@ -76,6 +79,7 @@ action :before_symlink do
     end
   end
 
+  new_resource.updated_by_last_action(true)
 end
 
 action :before_restart do
