@@ -24,18 +24,18 @@ if node['railslove']['manage_dns_records']
   gem_package "fog"
   credentials = data_bag_item(node['railslove']['route53']['databag'], node['railslove']['route53']['item'])
 
-  if node.attribute?('ec2') and node['ec2'].attribute?('public_ipv4')
-    route53_record "create a record" do
-      name  node['set_fqdn']
-      value node['ec2']["public_ipv4"]
-      type  "A"
-      ttl 300
+  route53_record "create a record" do
+    name  node['set_fqdn']
+    value node['ec2']["public_ipv4"]
+    type  "A"
+    ttl 300
 
-      zone_id               credentials["zone_id"]
-      aws_access_key_id     credentials["aws_access_key_id"]
-      aws_secret_access_key credentials["aws_secret_access_key"]
+    zone_id               credentials["zone_id"]
+    aws_access_key_id     credentials["aws_access_key_id"]
+    aws_secret_access_key credentials["aws_secret_access_key"]
 
-      action :create
-    end
+    action :create
+
+    only_if { node.attribute?('ec2') and node['ec2'].attribute?('public_ipv4') }
   end
 end
