@@ -31,17 +31,18 @@ def database_adapter_mapping
 end
 
 def database_config(site)
-  query = "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}"
+  query = "roles:*#{site.fetch(:db, {})[:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}"
 
   host = search("node", query).first
 
   Chef::Log.info("running: #{query}")
   if host
-    config = case site[:db][:type]
+    config = case site.fetch(:db, {})[:type]
       when "mysql" then {:password => host['mysql']['server_root_password'], :username => (host['mysql']['server_root_user'] || "root")}
       when "postgresql" then {:password => host['postgresql']['password']['postgres'], :username => "postgres"}
+      else {}
     end
-    config.merge(:fqdn => host[:ipaddress], :pool => site[:db][:pool])
+    config.merge(:fqdn => host[:ipaddress], :pool => site.fetch(:db, {})[:pool])
   else
     Chef::Log.error("No host found! Trying config from data bag!")
     site[:db]
@@ -49,7 +50,7 @@ def database_config(site)
 end
 
 def mongoid_config(site)
-  host = search("node", "roles:*#{site[:db][:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
+  host = search("node", "roles:*#{site.fetch(:db, {})[:type]} AND tags:#{site[:id]} AND chef_environment:#{node.chef_environment}").first
   unless host
     Chef::Log.error("Got no database host!!!")
     return {}
@@ -158,7 +159,7 @@ action :create do
       owner deploy_config[:user]
       group deploy_config[:group]
       mode "0775"
-      variables(:host => database_config(site), :db => site[:db][:name], :environment => site[:rails_env], :adapter => site[:db][:adapter])
+      variables(:host => database_config(site), :db => site.fetch(:db, {})[:name], :environment => site[:rails_env], :adapter => site.fetch(:db, {})[:adapter])
       only_if { site[:db] && ["mysql", "postgresql"].include?(site[:db][:type]) }
     end
 
@@ -167,7 +168,7 @@ action :create do
       owner deploy_config[:user]
       group deploy_config[:group]
       mode "0775"
-      variables(:host => mongoid_config(site), :db => site[:db][:name], :environment => site[:rails_env])
+      variables(:host => mongoid_config(site), :db => site.fetch(:db, {})[:name], :environment => site[:rails_env])
       only_if { site[:db] && ["mongoid"].include?(site[:db][:adapter]) }
     end
 
