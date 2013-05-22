@@ -55,6 +55,16 @@ file "/etc/update-motd.d/50-landscape-sysinfo" do
 end
 
 gem_package "bundler"
-gem_package "rake"
+
+gem_package "rake" do
+  action :purge
+  only_if { node['railslove']['rake']['version'] }
+end
+
+gem_package "rake" do
+  version node['railslove']['rake']['version']
+end
+
+
 gem_package "ruby-shadow"
 gem_package "astrails-safe"
