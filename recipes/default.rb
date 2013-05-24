@@ -50,8 +50,10 @@ node['railslove']['companies'].each do |company|
   end
 end
 
-file "/etc/update-motd.d/50-landscape-sysinfo" do
-  action :delete
+["50-landscape-sysinfo", "51-cloudguest"].each do |file|
+  file "/etc/update-motd.d/#{file}" do
+    action :delete
+  end
 end
 
 gem_package "bundler"
