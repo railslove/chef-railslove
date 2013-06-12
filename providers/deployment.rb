@@ -98,7 +98,7 @@ action :deploy do
           require "broach"
           Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
           room = Broach::Room.find_by_name(deploy_config[:campfire][:room])
-          room.speak("wahoo, deployed #{application_name} on #{node[:fqdn] to revision #{deploy_config[:revision]}! #{deploy_config[:commit_message]}")
+          room.speak("wahoo, deployed #{application_name} on #{node[:fqdn]} to revision #{deploy_config[:revision]}! #{deploy_config[:commit_message]}")
         rescue => e
           Chef::Log.info("Campfire: failed to connect to campfire.")
           Chef::Log.debug("Campfire: #{e.inspect}")
