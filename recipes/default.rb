@@ -67,6 +67,7 @@ gem_package "rake" do
   version node['railslove']['rake']['version']
 end
 
-
 gem_package "ruby-shadow"
-gem_package "astrails-safe"
+gem_package "backup" do
+  version "3.7.0"
+end
