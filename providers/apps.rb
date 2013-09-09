@@ -209,6 +209,21 @@ action :create do
       end
     end
 
+    if site[:skidekiq]
+      template "/etc/init/sidekiq_#{site[:id]}.conf" do
+        source "sidekiq.conf.erb"
+        variables(:application => site, :deployment => deploy_config)
+      end
+
+      sudo deploy_config[:user] do
+        user deploy_config[:user]
+        runas "root"
+        commands ["/usr/sbin/service sidekiq_*"]
+        host "ALL"
+        nopasswd true
+      end
+    end
+
     logrotate_app site[:id] do
       cookbook "logrotate"
       path "#{deploy_config[:deploy_to]}/shared/log/*.log"
