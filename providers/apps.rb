@@ -209,7 +209,7 @@ action :create do
       end
     end
 
-    if site[:skidekiq]
+    if site[:sidekiq]
       # create service for managing main sidekiq process
       template "/etc/init/sidekiq_#{site[:id]}.conf" do
         source "sidekiq.conf.erb"
