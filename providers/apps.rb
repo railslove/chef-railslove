@@ -210,6 +210,7 @@ action :create do
     end
 
     if site[:skidekiq]
+      # create service for managing main sidekiq process
       template "/etc/init/sidekiq_#{site[:id]}.conf" do
         source "sidekiq.conf.erb"
         variables(:application => site, :deployment => deploy_config)
@@ -219,6 +220,20 @@ action :create do
         user deploy_config[:user]
         runas "root"
         commands ["/usr/sbin/service sidekiq_*"]
+        host "ALL"
+        nopasswd true
+      end
+
+      # create service for managing sidekiq workers
+      template "/etc/init/sidekiq_workers_#{site[:id]}.conf" do
+        source "sidekiq_workers.conf.erb"
+        variables(:application => site, :deployment => deploy_config)
+      end
+
+      sudo deploy_config[:user] do
+        user deploy_config[:user]
+        runas "root"
+        commands ["/usr/sbin/service sidekiq_workers_*"]
         host "ALL"
         nopasswd true
       end
