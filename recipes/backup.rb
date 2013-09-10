@@ -33,65 +33,64 @@ end
 
 credentials = s3_bag
 
-if node["roles"].include?("database-postgresql") && credentials.any?
-  backup_generate_model "postgresql" do
-    description "backup of postgres"
-    backup_type "database"
-    database_type "PostgreSQL"
-    split_into_chunks_of 2048
-    store_with(
-      {
-       "engine" => "S3",
-       "settings" => {
-          "s3.access_key_id" => credentials["aws_access_key_id"],
-          "s3.secret_access_key" => credentials["aws_secret_access_key"],
-          "s3.region" => credentials["region"],
-          "s3.bucket" => credentials["bucket"],
-          "s3.path" => "/#{node.name}",
-          "s3.keep" => 10 }
-      }
-    )
-    options(
-      {
-        "db.name" => ":all",
-        "db.username" => "\"postgres\"",
-        "db.password" => "\"#{node['postgresql']['password']['postgres']}\"",
-        "db.host" => "\"localhost\""
-      }
-    )
+backup_generate_model "postgresql" do
+  description "backup of postgres"
+  backup_type "database"
+  database_type "PostgreSQL"
+  split_into_chunks_of 2048
+  store_with(
+    {
+     "engine" => "S3",
+     "settings" => {
+        "s3.access_key_id" => credentials["aws_access_key_id"],
+        "s3.secret_access_key" => credentials["aws_secret_access_key"],
+        "s3.region" => credentials["region"],
+        "s3.bucket" => credentials["bucket"],
+        "s3.path" => "/#{node.name}",
+        "s3.keep" => 10 }
+    }
+  )
+  options(
+    {
+      "db.name" => ":all",
+      "db.username" => "\"postgres\"",
+      "db.password" => "\"#{node['postgresql']['password']['postgres']}\"",
+      "db.host" => "\"localhost\""
+    }
+  )
 
-    action :backup
-  end
+  action :backup
+  only_if { node["roles"].include?("database-postgresql") && credentials.any? }
 end
 
-if node["roles"].include?("database-mysql") && credentials.any?
-  backup_generate_model "mysql" do
-    description "backup of mysql"
-    backup_type "database"
-    database_type "MySQL"
-    split_into_chunks_of 2048
-    store_with(
-      {
-       "engine" => "S3",
-       "settings" => {
-          "s3.access_key_id" => credentials["aws_access_key_id"],
-          "s3.secret_access_key" => credentials["aws_secret_access_key"],
-          "s3.region" => credentials["region"],
-          "s3.bucket" => credentials["bucket"],
-          "s3.path" => "/#{node.name}",
-          "s3.keep" => 10 }
-      }
-    )
-    options(
-      {
-        "db.name" => ":all",
-        "db.username" => "\"#{(node['mysql']['server_root_user'] || "root")}\"",
-        "db.password" => "\"#{node['mysql']['server_root_password']}\"",
-        "db.host" => "\"localhost\"",
-        "db.additional_options" => "[\"--quick\", \"--single-transaction\"]"
-      }
-    )
 
-    action :backup
-  end
+backup_generate_model "mysql" do
+  description "backup of mysql"
+  backup_type "database"
+  database_type "MySQL"
+  split_into_chunks_of 2048
+  store_with(
+    {
+     "engine" => "S3",
+     "settings" => {
+        "s3.access_key_id" => credentials["aws_access_key_id"],
+        "s3.secret_access_key" => credentials["aws_secret_access_key"],
+        "s3.region" => credentials["region"],
+        "s3.bucket" => credentials["bucket"],
+        "s3.path" => "/#{node.name}",
+        "s3.keep" => 10 }
+    }
+  )
+  options(
+    {
+      "db.name" => ":all",
+      "db.username" => "\"#{(node['mysql']['server_root_user'] || "root")}\"",
+      "db.password" => "\"#{node['mysql']['server_root_password']}\"",
+      "db.host" => "\"localhost\"",
+      "db.additional_options" => "[\"--quick\", \"--single-transaction\"]"
+    }
+  )
+
+  action :backup
+  only_if { node["roles"].include?("database-mysql") && credentials.any? }
 end
