@@ -54,7 +54,7 @@ backup_generate_model "postgresql" do
     {
       "db.name" => ":all",
       "db.username" => "\"postgres\"",
-      "db.password" => "\"#{node['postgresql']['password']['postgres']}\"",
+      "db.password" => "\"#{node.fetch('postgresql', {}).fetch('password', {})['postgres']}\"",
       "db.host" => "\"localhost\""
     }
   )
@@ -84,8 +84,8 @@ backup_generate_model "mysql" do
   options(
     {
       "db.name" => ":all",
-      "db.username" => "\"#{(node['mysql']['server_root_user'] || "root")}\"",
-      "db.password" => "\"#{node['mysql']['server_root_password']}\"",
+      "db.username" => "\"#{(node.fetch('mysql', {})['server_root_user'] || "root")}\"",
+      "db.password" => "\"#{node.fetch('mysql', {})['server_root_password']}\"",
       "db.host" => "\"localhost\"",
       "db.additional_options" => "[\"--quick\", \"--single-transaction\"]"
     }
