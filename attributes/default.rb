@@ -4,5 +4,7 @@ default['railslove']['domain'] = "railslabs.com"
 default['railslove']['manage_dns_records'] = true
 default['railslove']['route53']['databag'] = "aws"
 default['railslove']['route53']['item'] = "route53"
+default['railslove']['backup']['databag'] = "aws"
+default['railslove']['backup']['item'] = "s3"
 default['railslove']['rake']['version'] = nil
 default['railslove']['ohai_plugins'] = []
