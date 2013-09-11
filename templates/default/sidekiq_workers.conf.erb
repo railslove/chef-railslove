@@ -8,9 +8,9 @@
 #
 # See sidekiq.conf for how to manage a single Sidekiq instance.
 #
-# Use "stop sidekiq_workers_app" to stop all Sidekiq instances.
-# Use "start sidekiq_workers_app" to start all instances.
-# Use "restart sidekiq_workers_app" to restart all instances.
+# Use "stop sidekiq_workers_<%= @application['id'] %>" to stop all Sidekiq instances.
+# Use "start sidekiq_workers_<%= @application['id'] %>" to start all instances.
+# Use "restart sidekiq_workers_<%= @application['id'] %>" to restart all instances.
 # Crazy, right?
 #
 
@@ -28,5 +28,12 @@ pre-start script
   for i in `seq 0 $((${NUM_WORKERS} - 1))`
   do
     start sidekiq_<%= @application['id'] %> index=$i
+  done
+end script
+
+pre-stop script
+  for i in `ls -1 <%= @deployment[:deploy_to] %>/current/tmp/pids/sidekiq-*.pid | sed -nr 's/.+sidekiq-([0-9]+).pid/\1/p'`
+  do
+    stop sidekiq_<%= @application['id'] %> index=$i
   done
 end script

@@ -8,16 +8,16 @@
 #
 # See sidekiq_workers.conf for how to manage all Sidekiq instances at once.
 #
-# This config is saved as /etc/init/sidekiq_app.conf and can be used as follows:
-#   sudo start sidekiq_app index=0
-#   sudo stop sidekiq_app index=0
-#   sudo status sidekiq_app index=0
+# This config is saved as /etc/init/sidekiq_<%= @application['id'] %>.conf and can be used as follows:
+#   sudo start sidekiq_<%= @application['id'] %> index=0
+#   sudo stop sidekiq_<%= @application['id'] %> index=0
+#   sudo status sidekiq_<%= @application['id'] %> index=0
 #
 # or use the service command:
-#   sudo service sidekiq_app {start,stop,restart,status}
+#   sudo service sidekiq_<%= @application['id'] %> {start,stop,restart,status}
 #
 
-description "sidekiq main process management for '<%= @application['id'] %>'"
+description "sidekiq process management for '<%= @application['id'] %>'"
 
 # no "start on", we don't want to automatically start
 stop on (stopping workers or runlevel [06])
@@ -40,4 +40,9 @@ exec /bin/bash <<EOT
   cd <%= @deployment[:deploy_to] %>/current
   bundle exec sidekiq -i ${index} -e <%= @application['rails_env'] || node.chef_environment %> -C config/sidekiq.yml -P tmp/pids/sidekiq-${index}.pid
 EOT
+end script
+
+post-stop script
+  # clean up
+  rm <%= @deployment[:deploy_to] %>/current/tmp/pids/sidekiq-${index}.pid
 end script
