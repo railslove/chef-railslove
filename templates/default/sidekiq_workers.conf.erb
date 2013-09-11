@@ -24,6 +24,7 @@ stop on runlevel [06]
 # to run on this machine
 env NUM_WORKERS=<%= @application['sidekiq']['num_workers'] || 1 %>
 
+# start as many sidekiq workers processes as specified using the upstart service
 pre-start script
   for i in `seq 0 $((${NUM_WORKERS} - 1))`
   do
@@ -31,7 +32,8 @@ pre-start script
   done
 end script
 
-pre-stop script
+# stop sidekiq workers processes based on pid files (tmp/pids/sidekiq-*.pid)
+post-stop script
   for i in `ls -1 <%= @deployment[:deploy_to] %>/current/tmp/pids/sidekiq-*.pid | sed -nr 's/.+sidekiq-([0-9]+).pid/\1/p'`
   do
     stop sidekiq_<%= @application['id'] %> index=$i
