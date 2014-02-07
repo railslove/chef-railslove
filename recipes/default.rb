@@ -56,6 +56,7 @@ end
 end
 
 gem_package "bundler"
+gem_package "slop"
 
 gem_package "rake" do
   action :purge
