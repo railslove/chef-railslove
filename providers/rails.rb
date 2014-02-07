@@ -70,12 +70,17 @@ action :before_symlink do
   end
 
   if new_resource.precompile_assets
+    env = new_resource.environment
+    env.merge!("RAILS_GROUPS" => "assets")
+
+    Chef::Log.info "Assets environment: #{new_resource.environment.inspect}"
+
     command = "rake assets:precompile"
     command = "#{bundle_command} exec #{command}" if new_resource.bundler
     execute command do
       cwd new_resource.release_path
       user new_resource.owner
-      environment new_resource.environment
+      environment env
     end
   end
 
