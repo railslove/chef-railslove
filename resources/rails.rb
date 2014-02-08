@@ -26,6 +26,6 @@ include Chef::Resource::ApplicationBase
 attribute :gems, :kind_of => [Array, Hash], :default => ["bundler", "rake"]
 attribute :bundler, :kind_of => [NilClass, TrueClass, FalseClass], :default => true
 attribute :bundler_without_groups, :kind_of => [Array], :default => []
-attribute :bundler_jobs, :kind_of => Fixnum, :default => (node.cpu.total rescue 1)
+attribute :bundler_jobs, :kind_of => Fixnum, :default => (node["cpu"]["total"] rescue 1)
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => true
