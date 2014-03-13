@@ -209,33 +209,36 @@ action :create do
       end
     end
 
+    # configure sidekiq upstart services
     if site[:sidekiq]
-      # create service for managing main sidekiq process
-      template "/etc/init/sidekiq_#{site[:id]}.conf" do
-        source "sidekiq.conf.erb"
-        variables(:application => site, :deployment => deploy_config)
-      end
+      if site[:sidekiq][:restrict_to_nodes_with_tag].nil? || node['tags'].include?(site[:sidekiq][:restrict_to_nodes_with_tag]) # if no restriction OR current node has the correct tag
+        # create service for managing main sidekiq process
+        template "/etc/init/sidekiq_#{site[:id]}.conf" do
+          source "sidekiq.conf.erb"
+          variables(:application => site, :deployment => deploy_config)
+        end
 
-      sudo deploy_config[:user] do
-        user deploy_config[:user]
-        runas "root"
-        commands ["/usr/sbin/service sidekiq_*"]
-        host "ALL"
-        nopasswd true
-      end
+        sudo deploy_config[:user] do
+          user deploy_config[:user]
+          runas "root"
+          commands ["/usr/sbin/service sidekiq_*"]
+          host "ALL"
+          nopasswd true
+        end
 
-      # create service for managing sidekiq workers
-      template "/etc/init/sidekiq_workers_#{site[:id]}.conf" do
-        source "sidekiq_workers.conf.erb"
-        variables(:application => site, :deployment => deploy_config)
-      end
+        # create service for managing sidekiq workers
+        template "/etc/init/sidekiq_workers_#{site[:id]}.conf" do
+          source "sidekiq_workers.conf.erb"
+          variables(:application => site, :deployment => deploy_config)
+        end
 
-      sudo deploy_config[:user] do
-        user deploy_config[:user]
-        runas "root"
-        commands ["/usr/sbin/service sidekiq_workers_*"]
-        host "ALL"
-        nopasswd true
+        sudo deploy_config[:user] do
+          user deploy_config[:user]
+          runas "root"
+          commands ["/usr/sbin/service sidekiq_workers_*"]
+          host "ALL"
+          nopasswd true
+        end
       end
     end
 
