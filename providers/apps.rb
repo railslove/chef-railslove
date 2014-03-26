@@ -212,30 +212,30 @@ action :create do
     # configure sidekiq upstart services
     if site[:sidekiq]
       if site[:sidekiq][:restrict_to_nodes_with_tag].nil? || node['tags'].include?(site[:sidekiq][:restrict_to_nodes_with_tag]) # if no restriction OR current node has the correct tag
-        # create service for managing main sidekiq process
-        template "/etc/init/sidekiq_#{site[:id]}.conf" do
-          source "sidekiq.conf.erb"
+        # create service for managing single sidekiq processes
+        template "/etc/init/single_sidekiq_for_#{site[:id]}.conf" do
+          source "single_sidekiq.conf.erb"
           variables(:application => site, :deployment => deploy_config)
         end
 
         sudo deploy_config[:user] do
           user deploy_config[:user]
           runas "root"
-          commands ["/usr/sbin/service sidekiq_*"]
+          commands ["/usr/sbin/service single_sidekiq_for_#{site[:id]}"]
           host "ALL"
           nopasswd true
         end
 
         # create service for managing sidekiq workers
-        template "/etc/init/sidekiq_workers_#{site[:id]}.conf" do
-          source "sidekiq_workers.conf.erb"
+        template "/etc/init/sidekiq_manager_for_#{site[:id]}.conf" do
+          source "sidekiq_manager.conf.erb"
           variables(:application => site, :deployment => deploy_config)
         end
 
         sudo deploy_config[:user] do
           user deploy_config[:user]
           runas "root"
-          commands ["/usr/sbin/service sidekiq_workers_*"]
+          commands ["/usr/sbin/service sidekiq_manager_for_#{site[:id]}"]
           host "ALL"
           nopasswd true
         end
