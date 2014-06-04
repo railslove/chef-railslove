@@ -1,0 +1,55 @@
+# from:  https://github.com/mperham/sidekiq/blob/master/examples/upstart/manage-many/sidekiq.conf
+
+# Sidekiq config
+
+# This config should work with Ubuntu 12.04+.  It
+# allows you to manage multiple Sidekiq instances with
+# Upstart, Ubuntu's native service management tool.
+#
+# See sidekiq_manager_for_<%= @application['id'] %>.conf for how to manage all Sidekiq instances at once.
+#
+# This config is saved as /etc/init/sidekiq_<%= @application['id'] %>.conf and can be used as follows:
+#   sudo start single_sidekiq_for_<%= @application['id'] %> index=0
+#   sudo stop single_sidekiq_for_<%= @application['id'] %> index=0
+#   sudo status single_sidekiq_for_<%= @application['id'] %> index=0
+#
+# or use the service command:
+#   sudo service single_sidekiq_for_<%= @application['id'] %> {start,stop,restart,status}
+#
+
+description "service for managing single sidekiq processes for '<%= @application['id'] %>'"
+
+# no "start on", we don't want to automatically start
+stop on (stopping sidekiq_manager_for_<%= @application['id'] %> or runlevel [06])
+
+# change to match your deployment user
+setuid <%= @deployment[:user] %>
+setgid <%= @deployment[:user] %>
+
+respawn
+respawn limit 3 30
+
+# TERM and USR1 are sent by sidekiqctl when stopping sidekiq.  Without declaring these as normal exit codes, it just respawns.
+normal exit 0 TERM USR1
+
+instance "<%= @application['id'] %>-sidekiq-$index"
+
+script
+# this script runs in /bin/sh by default
+exec /bin/bash <<EOT
+  # use syslog for logging
+  # exec &> /dev/kmsg
+
+  logger -t sidekiq "Starting single sidekiq process: <%= @application['id'] %>-sidekiq-$index"
+
+  cd <%= @deployment[:deploy_to] %>/current
+  exec bundle exec sidekiq -i ${index} -e <%= @application['rails_env'] || node.chef_environment %> -C config/sidekiq.yml -P tmp/pids/sidekiq-${index}.pid
+EOT
+end script
+
+pre-stop script
+  logger -t sidekiq "Stopping single sidekiq process: <%= @application['id'] %>-sidekiq-$index"
+
+  cd <%= @deployment[:deploy_to] %>/current
+  exec bundle exec sidekiqctl stop tmp/pids/sidekiq-${index}.pid
+end script
