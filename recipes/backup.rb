@@ -50,6 +50,15 @@ backup_generate_model "postgresql" do
         "s3.keep" => 10 }
     }
   )
+  notify_by(
+    {
+      "engine" => "HttpPost",
+      "settings" => {
+        "httppost.on_success" => true,
+        "httppost.uri" => node['railslove']['backup']['notification_uri']
+      }
+    }
+  ) if node['railslove']['backup']['notification_uri']
   options(
     {
       "db.name" => ":all",
