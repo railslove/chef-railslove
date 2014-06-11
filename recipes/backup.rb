@@ -55,6 +55,8 @@ backup_generate_model "postgresql" do
       "engine" => "HttpPost",
       "settings" => {
         "httppost.on_success" => true,
+        "httppost.on_failure" => false,
+        "httppost.on_warning" => false,
         "httppost.uri" => node['railslove']['backup']['notification_uri']
       }
     }
