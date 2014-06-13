@@ -19,23 +19,16 @@
 package "htop"
 package "iftop"
 package "vim"
-package "zsh"
-package "ack-grep"
 package "ntp"
 package "language-pack-de"
 package "git-core"
 package "libxml2-dev"
 package "libxslt-dev"
-package "openjdk-7-jre-headless"
-package "nodejs"
-package "imagemagick"
-package "libmagickwand-dev"
 package "mailutils"
 
 package "libcurl3"
 package "libcurl3-gnutls"
 package "libcurl4-openssl-dev"
-package "libv8-dev"
 
 node['railslove']['packages'].each do |package|
   package package
