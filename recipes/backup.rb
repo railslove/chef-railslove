@@ -27,10 +27,6 @@ end
 backup_install node.name
 backup_generate_config node.name
 
-gem_package "fog" do
-  version "~> 1.4.0"
-end
-
 credentials = s3_bag
 
 backup_generate_model "postgresql" do
