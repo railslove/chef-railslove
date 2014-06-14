@@ -26,6 +26,12 @@ package "libxml2-dev"
 package "libxslt-dev"
 package "mailutils"
 
+package "openjdk-7-jre-headless"
+package "nodejs"
+package "imagemagick"
+package "libmagickwand-dev"
+package "libv8-dev"
+
 package "libcurl3"
 package "libcurl3-gnutls"
 package "libcurl4-openssl-dev"
