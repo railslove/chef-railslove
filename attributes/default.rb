@@ -8,3 +8,5 @@ default['railslove']['backup']['databag'] = "aws"
 default['railslove']['backup']['item'] = "s3"
 default['railslove']['rake']['version'] = nil
 default['railslove']['ohai_plugins'] = []
+default['railslove']['docker']['containers'] = []
+default['railslove']['docker']['registry_url'] = 'https://index.docker.io/v1/'
