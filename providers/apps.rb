@@ -229,7 +229,7 @@ action :create do
         # create service for managing sidekiq workers
         template "/etc/init/sidekiq_manager_for_#{site[:id]}.conf" do
           source "sidekiq_manager.conf.erb"
-          variables(:application => site, :deployment => deploy_config)
+          variables(:application => site)
         end
 
         sudo deploy_config[:user] do
