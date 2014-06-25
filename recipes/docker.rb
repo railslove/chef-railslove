@@ -16,7 +16,8 @@ end
 
 node['railslove']['docker']['containers'].each do |container|
   begin
-    config = data_bag_item('containers', container)
+    config = Chef::EncryptedDataBagItem.load('containers', container)
+    config = config.to_hash
     image = config.delete('image')
     docker_image image
 
