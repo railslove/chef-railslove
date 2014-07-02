@@ -25,7 +25,8 @@ def database_adapter_mapping
     "postgresql"   => Proc.new { |host| { :host => host[:ipaddress], :password => host['postgresql']['password']['postgres'], :username => "postgres"} },
     "mongoid"      => Proc.new { |host| {:host => host[:ipaddress] } },
     "redis"        => Proc.new { |host| {:host => host[:ipaddress] } },
-    "memcached"    => Proc.new { |host| {:host => host[:ipaddress], :port => host[:memcached][:port] } }
+    "memcached"    => Proc.new { |host| {:host => host[:ipaddress], :port => host[:memcached][:port] } },
+    "elasticsearch" => Proc.new { |host| {:host => host[:ipaddress], :port => host[:elasticsearch][:http][:port] } }
   })
   @mapping
 end
