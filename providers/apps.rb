@@ -210,6 +210,21 @@ action :create do
       end
     end
 
+    if site[:hutch]
+      template "/etc/init/hutch_#{site[:id]}.conf" do
+        source "hutch.conf.erb"
+        variables(:application => site, :deployment => deploy_config)
+      end
+
+      sudo deploy_config[:user] do
+        user deploy_config[:user]
+        runas "root"
+        commands ["/usr/sbin/service hutch_*"]
+        host "ALL"
+        nopasswd true
+      end
+    end
+
     # configure sidekiq upstart services
     if site[:sidekiq]
       if site[:sidekiq][:restrict_to_nodes_with_tag].nil? || node['tags'].include?(site[:sidekiq][:restrict_to_nodes_with_tag]) # if no restriction OR current node has the correct tag

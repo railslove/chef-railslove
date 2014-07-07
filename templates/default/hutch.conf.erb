@@ -1,0 +1,21 @@
+description "<%= @application['id'] %> hutch"
+
+start on (local-filesystems and runlevel [2345])
+stop on runlevel [016]
+
+respawn
+respawn limit 10 5
+
+env RAILS_ENV=<%= @application['rails_env'] || node.chef_environment %>
+
+pre-start script
+  mkdir -p /var/run/<%= @application['id'] %>
+  chown -R <%=@deployment[:user]%>:<%=@deployment[:user]%> /var/run/<%= @application['id'] %>
+end script
+
+exec start-stop-daemon \
+  --start \
+  --pidfile /var/run/<%= @application['id'] %>/<%= @application['id'] %>.pid \
+  --chuid <%=@deployment[:user]%>:<%=@deployment[:user]%> \
+  --chdir <%= @deployment[:deploy_to] %>/current \
+  --exec /usr/local/bin/bundle exec 'hutch --config config/hutch.yml'
