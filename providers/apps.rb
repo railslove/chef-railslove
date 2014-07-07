@@ -187,7 +187,7 @@ action :create do
           owner deploy_config[:user]
           group deploy_config[:group]
           mode "0775"
-          file_content = YAML.dump({(site[:rails_env] || node.chef_environment) => JSON.parse(attributes.to_hash.to_json)})
+          file_content = YAML.dump(attributes.delete(:skip_env_prefix) ? JSON.parse(attributes.to_hash.to_json) : {(site[:rails_env] || node.chef_environment) => JSON.parse(attributes.to_hash.to_json)})
           Chef::Log.info("writing config file: #{filename} with content:")
           Chef::Log.info(file_content)
           variables(:yaml => file_content)
