@@ -20,7 +20,7 @@ provides 'wtf'
 require 'json'
 require 'rest-client'
 
-url = 'http://ipv4.wtfismyip.com/json'
+url = 'http://ip.aufnahme.com'
 
 begin
   response = RestClient.get(url)
@@ -28,14 +28,11 @@ begin
 
   if not results.nil?
     wtf Mash.new
-    if not results['YourFuckingIPAddress'].nil?
-      wtf['public_ipv4'] = results['YourFuckingIPAddress']
-    end
-    if not results['YourFuckingLocation'].nil?
-      wtf['location'] = results['YourFuckingLocation']
+    if not results['ip'].nil?
+      wtf['public_ipv4'] = results['ip']
     end
   end
 
 rescue RestClient::Exception
-  Ohai::Log.debug("wtfismyip lookup failed.")
+  Ohai::Log.debug("myip lookup failed.")
 end
