@@ -101,3 +101,32 @@ backup_generate_model "mysql" do
   action :backup
   only_if { node["roles"].include?("database-mysql") && credentials.any? }
 end
+
+backup_generate_model "mongodb" do
+  description "backup of mongodb"
+  backup_type "database"
+  database_type "MongoDB"
+  split_into_chunks_of 2048
+  store_with(
+    {
+     "engine" => "S3",
+     "settings" => {
+        "s3.access_key_id" => credentials["aws_access_key_id"],
+        "s3.secret_access_key" => credentials["aws_secret_access_key"],
+        "s3.region" => credentials["region"],
+        "s3.bucket" => credentials["bucket"],
+        "s3.path" => "/#{node.name}",
+        "s3.keep" => 10 }
+    }
+  )
+  options(
+    {
+      "db.name" => ":all",
+      "db.host" => "\"localhost\"",
+      "db.port" => "\"#{node.fetch('mongodb', {})['config']['port']}\"",
+    }
+  )
+
+  action :backup
+  only_if { node["roles"].include?("mongodb") && credentials.any? }
+end
