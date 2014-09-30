@@ -121,7 +121,6 @@ backup_generate_model "mongodb" do
   )
   options(
     {
-      "db.name" => ":all",
       "db.host" => "\"localhost\"",
       "db.port" => "\"#{node.fetch('mongodb', {})['config']['port']}\"",
     }
