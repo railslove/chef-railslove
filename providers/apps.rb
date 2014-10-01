@@ -98,8 +98,15 @@ action :create do
 
     deploy_config[:home] ||= new_resource.home
     deploy_config[:deploy_group] ||= new_resource.deploy_group
+    deploy_config[:restart_command] = new_resource.restart_command
 
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
+    deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
+
+    execute "restart-application" do
+      command deploy_config[:restart_command]
+      action :nothing
+    end
 
     # create user
     user deploy_config[:user] do
@@ -161,6 +168,7 @@ action :create do
       group deploy_config[:group]
       mode "0775"
       variables(:host => database_config(site), :db => site.fetch(:db, {})[:name], :environment => site[:rails_env], :adapter => site.fetch(:db, {})[:adapter])
+      notifies :run, "execute[restart-application]", :delayed
       only_if { site[:db] && ["mysql", "postgresql"].include?(site[:db][:type]) }
     end
 
@@ -191,6 +199,7 @@ action :create do
           Chef::Log.info("writing config file: #{filename} with content:")
           Chef::Log.info(file_content)
           variables(:yaml => file_content)
+          notifies :run, "execute[restart-application]", :delayed
         end
       end
     end
