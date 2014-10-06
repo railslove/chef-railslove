@@ -14,42 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-provides "cloud"
+Ohai.plugin(:CloudWTF) do
+  provides "cloud"
+  depends "wtf"
 
-require_plugin "wtf"
+  collect_data do
+    cloud Mash.new
 
-
-# Make top-level cloud hashes
-#
-def create_objects
-  cloud Mash.new
-  cloud[:public_ips] = Array.new
-  cloud[:private_ips] = Array.new
+    cloud[:public_ips] = Array.new
+    cloud[:private_ips] = Array.new
+    cloud[:public_ipv4] = wtf['public_ipv4']
+    cloud[:public_ipv4] = wtf['public_ipv4']
+    cloud[:local_ipv4]  = ipaddress
+    cloud[:provider] = "wtf"
+  end
 end
-
-# ----------------------------------------
-# wtf
-# ----------------------------------------
-
-# Is current cloud wtf?
-#
-# === Return
-# true:: If brightbox Hash is defined
-# false:: Otherwise
-def on_wtf?
-  wtf != nil
-end
-
-# Fill cloud hash with wtf values
-def get_wtf_values
-  cloud[:public_ipv4] = wtf['public_ipv4']
-  cloud[:local_ipv4]  = ipaddress
-  cloud[:provider] = "wtf"
-end
-
-# setup wtf cloud
-if on_wtf?
-  create_objects
-  get_wtf_values
-end
-

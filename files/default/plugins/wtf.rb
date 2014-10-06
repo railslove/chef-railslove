@@ -15,24 +15,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-provides 'wtf'
-
 require 'json'
 require 'rest-client'
 
-url = 'http://ip.aufnahme.com'
+Ohai.plugin(:WTF) do
+  provides "wtf"
 
-begin
-  response = RestClient.get(url)
-  results = JSON.parse(response)
+  collect_data do
+    url = 'http://ip.aufnahme.com'
+    begin
+      response = RestClient.get(url)
+      results = JSON.parse(response)
 
-  if not results.nil?
-    wtf Mash.new
-    if not results['ip'].nil?
-      wtf['public_ipv4'] = results['ip']
+      if not results.nil?
+        wtf Mash.new
+        if not results['ip'].nil?
+          wtf['public_ipv4'] = results['ip']
+        end
+      end
+
+    rescue RestClient::Exception
+      Ohai::Log.debug("myip lookup failed.")
     end
   end
 
-rescue RestClient::Exception
-  Ohai::Log.debug("myip lookup failed.")
 end
