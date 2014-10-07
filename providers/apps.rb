@@ -106,6 +106,7 @@ action :create do
     execute "restart-application" do
       command deploy_config[:restart_command]
       action :nothing
+      only_if { File.exists?("#{deploy_config[:deploy_to]}/current") }
     end
 
     # create user
