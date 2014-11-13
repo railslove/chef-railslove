@@ -34,6 +34,7 @@ backup_generate_model "postgresql" do
   backup_type "database"
   database_type "PostgreSQL"
   split_into_chunks_of 2048
+  syslog true
   store_with(
     {
      "engine" => "S3",
@@ -76,6 +77,7 @@ backup_generate_model "mysql" do
   backup_type "database"
   database_type "MySQL"
   split_into_chunks_of 2048
+  syslog true
   store_with(
     {
      "engine" => "S3",
@@ -107,6 +109,7 @@ backup_generate_model "mongodb" do
   backup_type "database"
   database_type "MongoDB"
   split_into_chunks_of 2048
+  syslog true
   store_with(
     {
      "engine" => "S3",
