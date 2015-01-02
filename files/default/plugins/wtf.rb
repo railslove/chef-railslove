@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require 'json'
-require 'rest-client'
+require 'net/http'
 
 Ohai.plugin(:WTF) do
   provides "wtf"
@@ -24,7 +24,7 @@ Ohai.plugin(:WTF) do
   collect_data do
     url = 'http://ip.aufnahme.com'
     begin
-      response = RestClient.get(url)
+      response = Net::HTTP.get(URI.parse(url))
       results = JSON.parse(response)
 
       if not results.nil?
@@ -34,7 +34,7 @@ Ohai.plugin(:WTF) do
         end
       end
 
-    rescue RestClient::Exception
+    rescue
       Ohai::Log.debug("myip lookup failed.")
     end
   end
