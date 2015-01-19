@@ -10,8 +10,9 @@ end
 
 action :before_symlink do
   link "#{new_resource.release_path}/public" do
-    to "#{new_resource.release_path}"
+    to new_resource.release_path
   end
+  new_resource.updated_by_last_action(true)
 end
 
 action :before_restart do
