@@ -64,16 +64,18 @@ action :deploy do
 
     deploy_key deploy_config[:deploy_key]
 
-    purge_before_symlink %w{log tmp/pids public/system}
-    create_dirs_before_symlink %w{tmp public config}
+    if deploy_config[:application_type] == "rails"
+      purge_before_symlink %w{log tmp/pids public/system}
+      create_dirs_before_symlink %w{tmp public config}
+      symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"})
+      restart_command deploy_config[:restart_command]
+    end
 
     symlink_before_migrate((deploy_config[:symlinks]||{}))
-    symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log"})
 
     migrate deploy_config[:migrate]
     migration_command deploy_config[:migration_command]
 
-    restart_command deploy_config[:restart_command]
     rollback_on_error true
 
     before_symlink do
@@ -117,7 +119,10 @@ action :deploy do
         bundler deploy_config[:bundler]
         precompile_assets deploy_config[:precompile_assets]
       end
+    elsif deploy_config[:application_type] == "static"
+      railslove_static
     end
+
 
   end
 
