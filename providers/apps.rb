@@ -98,7 +98,7 @@ action :create do
 
     deploy_config[:home] ||= new_resource.home
     deploy_config[:deploy_group] ||= new_resource.deploy_group
-    deploy_config[:restart_command] = new_resource.restart_command
+    deploy_config[:restart_command] ||= new_resource.restart_command
 
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
     deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
