@@ -36,6 +36,7 @@ action :deploy do
   deploy_config[:home] ||= new_resource.home
   deploy_config[:deploy_group] ||= new_resource.deploy_group
   deploy_config[:migrate] ||= new_resource.migrate unless deploy_config.key?(:migrate)
+  deploy_config[:bundler] ||= new_resource.bundler unless deploy_config.key?(:bundler)
   deploy_config[:migration_command] ||= new_resource.migration_command
 
   deploy_config[:precompile_assets] ||= new_resource.precompile_assets unless deploy_config.key?(:precompile_assets)
@@ -113,7 +114,7 @@ action :deploy do
           "RACK_ENV"  => deploy_config[:environment]
         })
         gems %w(bundler rake)
-        bundler true
+        bundler deploy_config[:bundler]
         precompile_assets deploy_config[:precompile_assets]
       end
     end
