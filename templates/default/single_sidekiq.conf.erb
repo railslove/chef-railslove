@@ -37,18 +37,15 @@ instance "<%= @application['id'] %>-sidekiq-$index"
 script
 # this script runs in /bin/sh by default
 exec /bin/bash <<EOT
-  # use syslog for logging
-  # exec &> /dev/kmsg
-
-  logger -t sidekiq "Starting single sidekiq process: <%= @application['id'] %>-sidekiq-$index"
+  logger -t sidekiq-<%= @application['id'] %> "Starting single sidekiq process: <%= @application['id'] %>-sidekiq-$index"
 
   cd <%= @deployment[:deploy_to] %>/current
-  exec bundle exec sidekiq -i ${index} -e <%= @application['rails_env'] || node.chef_environment %> -C config/sidekiq.yml -P tmp/pids/sidekiq-${index}.pid
+  exec bundle exec sidekiq -i ${index} -e <%= @application['rails_env'] || node.chef_environment %> -C config/sidekiq.yml -P tmp/pids/sidekiq-${index}.pid 2>&1 | logger -t sidekiq-<%= @application['id'] %>
 EOT
 end script
 
 pre-stop script
-  logger -t sidekiq "Stopping single sidekiq process: <%= @application['id'] %>-sidekiq-$index"
+  logger -t sidekiq-<%= @application['id'] %> "Stopping single sidekiq process: <%= @application['id'] %>-sidekiq-$index"
 
   cd <%= @deployment[:deploy_to] %>/current
   exec bundle exec sidekiqctl stop tmp/pids/sidekiq-${index}.pid
