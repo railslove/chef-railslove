@@ -29,6 +29,7 @@ package "libxml2-dev"
 package "libxslt-dev"
 package "mailutils"
 
+package "build-essential"
 package "openjdk-7-jre-headless"
 package "nodejs"
 package "imagemagick"
