@@ -21,7 +21,9 @@ package "htop"
 package "iftop"
 package "vim"
 package "ntp"
-package "language-pack-de"
+if platform?('ubuntu')
+  package "language-pack-de"
+end
 package "git-core"
 package "libxml2-dev"
 package "libxslt-dev"
