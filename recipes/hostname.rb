@@ -33,7 +33,7 @@ credentials = route53_bag
 
 route53_record "create a record" do
   name node['set_fqdn']
-  value Array.wrap(cloud["public_ipv4"])[0]
+  value Array(cloud["public_ipv4"])[0]
   type  "A"
   ttl 300
 
