@@ -31,17 +31,21 @@ gem_package "fog"
 cloud       = node['cloud'] || {}
 credentials = route53_bag
 
-route53_record "create a record" do
-  name node['set_fqdn']
-  value Array(cloud["public_ipv4"])[0]
-  type  "A"
-  ttl 300
+begin
+  route53_record "create a record" do
+    name node['set_fqdn']
+    value Array(cloud["public_ipv4"])[0]
+    type  "A"
+    ttl 300
 
-  zone_id               credentials["zone_id"]
-  aws_access_key_id     credentials["aws_access_key_id"]
-  aws_secret_access_key credentials["aws_secret_access_key"]
+    zone_id               credentials["zone_id"]
+    aws_access_key_id     credentials["aws_access_key_id"]
+    aws_secret_access_key credentials["aws_secret_access_key"]
 
-  action :create
+    action :create
 
-  only_if { node['railslove']['manage_dns_records'] and credentials.any? }
+    only_if { node['railslove']['manage_dns_records'] and credentials.any? }
+  end
+rescue Excon::Errors::Timeout, Excon::Errors::SocketError => e
+  Chef::Log.warn(e.message)
 end
