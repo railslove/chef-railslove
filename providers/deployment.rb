@@ -91,6 +91,8 @@ action :deploy do
       end
     end
     after_restart do
+      sha_to_deploy = release_path.split("/").last
+
       callback_file = "#{release_path}/deploy/after_restart.rb"
       if ::File.exist?(callback_file)
         run_callback_from_file(callback_file)
@@ -101,10 +103,22 @@ action :deploy do
           require "broach"
           Broach.settings = {'account' => deploy_config[:campfire][:subdomain], 'token' => deploy_config[:campfire][:token], 'use_ssl' => true}
           room = Broach::Room.find_by_name(deploy_config[:campfire][:room])
-          room.speak(":shipit: deployed #{application_name} to revision #{deploy_config[:revision]} on http://#{node["fqdn"]}! #{deploy_config[:commit_message]}")
+          room.speak(":shipit: deployed #{application_name} to revision #{sha_to_deploy[0...7]} on http://#{node["fqdn"]}! #{deploy_config[:commit_message]}")
         rescue => e
           Chef::Log.info("Campfire: failed to connect to campfire.")
-          Chef::Log.debug("Campfire: #{e.inspect}")
+          Chef::Log.error("Campfire: #{e.inspect}")
+        end
+      end
+      if deploy_config[:slack]
+        begin
+          message = ":shipit: deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on http://#{node["fqdn"]}! #{deploy_config[:commit_message]}"
+
+          slack_url = "https://#{deploy_config[:slack][:subdomain]}.slack.com/services/hooks/slackbot?token=#{deploy_config[:slack][:token]}&channel=%23#{deploy_config[:slack][:room]}"
+
+          Chef::HTTP::HTTPRequest.new(:POST, URI(slack_url), message).call
+        rescue => e
+          Chef::Log.info("Slack: failed to connect to slack.")
+          Chef::Log.error("Slack: #{e.inspect}")
         end
       end
     end
