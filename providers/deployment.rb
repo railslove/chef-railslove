@@ -114,7 +114,7 @@ action :deploy do
           payload = JSON.dump({
             "channel" => deploy_config[:slack][:channel],
             "username" => (deploy_config[:slack][:username] || "Chef"),
-            "text" => "deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on <http://#{node["fqdn"]}|#{node.name}!>",
+            "text" => "deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on <http://#{node["fqdn"]}|#{node.name}>!",
             "icon_emoji" => (deploy_config[:slack][:icon_emoji] || ":doughnut:")
           })
 
