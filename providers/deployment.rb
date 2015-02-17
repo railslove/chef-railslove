@@ -111,11 +111,14 @@ action :deploy do
       end
       if deploy_config[:slack]
         begin
-          message = ":shipit: deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on http://#{node["fqdn"]}! #{deploy_config[:commit_message]}"
+          payload = JSON.dump({
+            "channel": deploy_config[:slack][:channel],
+            "username": (deploy_config[:slack][:username] || "Chef"),
+            "text": "deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on http://#{node["fqdn"]}|#{node.name}!",
+            "icon_emoji": (deploy_config[:slack][:username] || ":doughnut:")
+          })
 
-          slack_url = "https://#{deploy_config[:slack][:subdomain]}.slack.com/services/hooks/slackbot?token=#{deploy_config[:slack][:token]}&channel=%23#{deploy_config[:slack][:room]}"
-
-          Chef::HTTP::HTTPRequest.new(:POST, URI(slack_url), message).call
+          Chef::HTTP::HTTPRequest.new(:POST, URI("https://hooks.slack.com/services/#{deploy_config[:slack][:token]}"), "payload=#{payload}").call
         rescue => e
           Chef::Log.info("Slack: failed to connect to slack.")
           Chef::Log.error("Slack: #{e.inspect}")
