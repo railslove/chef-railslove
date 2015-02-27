@@ -17,15 +17,22 @@
 Ohai.plugin(:CloudWTF) do
   provides "cloud"
   depends "wtf"
+  depends "gce"
+
+  def on_gce?
+    gce != nil
+  end
 
   collect_data do
-    cloud Mash.new
+    unless on_gce?
+      cloud Mash.new
 
-    cloud[:public_ips] = Array.new
-    cloud[:private_ips] = Array.new
-    cloud[:public_ipv4] = wtf['public_ipv4']
-    cloud[:public_ipv4] = wtf['public_ipv4']
-    cloud[:local_ipv4]  = ipaddress
-    cloud[:provider] = "wtf"
+      cloud[:public_ips] = Array.new
+      cloud[:private_ips] = Array.new
+      cloud[:public_ipv4] = wtf['public_ipv4']
+      cloud[:public_ipv4] = wtf['public_ipv4']
+      cloud[:local_ipv4]  = ipaddress
+      cloud[:provider] = "wtf"
+    end
   end
 end
