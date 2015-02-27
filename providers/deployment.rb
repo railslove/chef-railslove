@@ -112,10 +112,24 @@ action :deploy do
       if deploy_config[:slack]
         begin
           payload = JSON.dump({
-            "channel" => deploy_config[:slack][:channel],
-            "username" => (deploy_config[:slack][:username] || "Chef"),
-            "text" => "deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on <http://#{node["fqdn"]}|#{node.name}>!",
-            "icon_emoji" => (deploy_config[:slack][:icon_emoji] || ":doughnut:")
+              "channel" => deploy_config[:slack][:channel],
+              "username" => (deploy_config[:slack][:username] || "Chef"),
+              "icon_emoji" => (deploy_config[:slack][:icon_emoji] || ":doughnut:"),
+              "fallback" => "deployed #{application_name} revision *#{sha_to_deploy[0...7]}* on <http://#{node["fqdn"]}|#{node.name}>!",
+              "pretext" => "deployed #{application_name} on <http://#{node["fqdn"]}|#{node.name}>!",
+              "color" => "good",
+              "fields" => [
+                  {
+                      "title" => "Revision",
+                      "value" => sha_to_deploy[0...7],
+                      "short" => true
+                  },
+                  {
+                      "title" => "Environment",
+                      "value" => node.chef_environment,
+                      "short" => true
+                  }
+              ],
           })
 
           Chef::HTTP::HTTPRequest.new(:POST, URI("https://hooks.slack.com/services/#{deploy_config[:slack][:token]}"), "payload=#{payload}").call
