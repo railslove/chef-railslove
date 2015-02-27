@@ -111,7 +111,7 @@ action :deploy do
       end
       if deploy_config[:slack]
         begin
-          repo = Addressable::URI.heuristic_parse(deploy_config[:repository].gsub(/^[^@]+\D/, "").gsub(":", "/").gsub(".git", ""), :scheme => "https")
+          repo = URI.parse(deploy_config[:repository].gsub(/^[^@]+\D/, "").gsub(":", "/").gsub(".git", ""))
           repo.path += "/commits/#{sha_to_deploy}"
           payload = JSON.dump({
               "channel" => deploy_config[:slack][:channel],
@@ -123,7 +123,7 @@ action :deploy do
               "fields" => [
                   {
                       "title" => "Revision",
-                      "value" => "<#{repo.to_s}|#{sha_to_deploy[0...7]}>",
+                      "value" => "<https://#{repo.to_s}|#{sha_to_deploy[0...7]}>",
                       "short" => true
                   },
                   {
