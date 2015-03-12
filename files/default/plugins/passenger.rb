@@ -3,7 +3,10 @@ Ohai.plugin(:Passenger) do
 
   collect_data do
     passenger Mash.new
-    passenger[:version] = %x{passenger-config about version}.chomp
+    version = %x{passenger-config about version}.chomp
+    if version
+      passenger[:version] = version.to_s[/\d+(\.\d+)+/]
+    end
   end
 
 end
