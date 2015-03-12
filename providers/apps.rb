@@ -103,6 +103,8 @@ action :create do
     deploy_config[:deploy_to] ||= "#{deploy_config[:home]}/#{site[:id]}"
     deploy_config[:restart_command] = "cd #{deploy_config[:deploy_to]}/current && #{deploy_config[:restart_command]}" # hack to run restart command from the release directory
 
+    deploy_config[:deploy_user_sudo_commands] = []
+
     execute "restart-application" do
       command deploy_config[:restart_command]
       action :nothing
@@ -211,13 +213,7 @@ action :create do
         variables(:application => site, :deployment => deploy_config)
       end
 
-      sudo deploy_config[:user] do
-        user deploy_config[:user]
-        runas "root"
-        commands ["/usr/sbin/service delayed_job_*"]
-        host "ALL"
-        nopasswd true
-      end
+      deploy_config[:deploy_user_sudo_commands] << "/usr/sbin/service delayed_job_*"
     end
 
     if site[:hutch]
@@ -226,13 +222,7 @@ action :create do
         variables(:application => site, :deployment => deploy_config)
       end
 
-      sudo deploy_config[:user] do
-        user deploy_config[:user]
-        runas "root"
-        commands ["/usr/sbin/service hutch_*"]
-        host "ALL"
-        nopasswd true
-      end
+      deploy_config[:deploy_user_sudo_commands] << "/usr/sbin/service hutch_*"
     end
 
     # configure sidekiq upstart services
@@ -244,13 +234,7 @@ action :create do
           variables(:application => site, :deployment => deploy_config)
         end
 
-        sudo deploy_config[:user] do
-          user deploy_config[:user]
-          runas "root"
-          commands ["/usr/sbin/service single_sidekiq_for_#{site[:id]}"]
-          host "ALL"
-          nopasswd true
-        end
+        deploy_config[:deploy_user_sudo_commands] << "/usr/sbin/service single_sidekiq_for_#{site[:id]}"
 
         # create service for managing sidekiq workers
         template "/etc/init/sidekiq_manager_for_#{site[:id]}.conf" do
@@ -258,14 +242,16 @@ action :create do
           variables(:application => site)
         end
 
-        sudo deploy_config[:user] do
-          user deploy_config[:user]
-          runas "root"
-          commands ["/usr/sbin/service sidekiq_manager_for_#{site[:id]}"]
-          host "ALL"
-          nopasswd true
-        end
+        deploy_config[:deploy_user_sudo_commands] << "/usr/sbin/service sidekiq_manager_for_#{site[:id]}"
       end
+    end
+
+    sudo deploy_config[:user] do
+      user deploy_config[:user]
+      runas "root"
+      commands deploy_config[:deploy_user_sudo_commands]
+      host "ALL"
+      nopasswd true
     end
 
     logrotate_app site[:id] do
