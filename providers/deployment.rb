@@ -48,10 +48,14 @@ action :deploy do
   deploy_config[:revision] ||= new_resource.revision
   deploy_config[:environment] ||= node.chef_environment
 
+  deploy_config[:shallow_clone] ||= new_resource.shallow_clone
+
   application new_resource.site_config[:id] do
     path deploy_config[:deploy_to]
     owner deploy_config[:user]
     group deploy_config[:group]
+
+    shallow_clone deploy_config[:shallow_clone]
 
     environment_name deploy_config[:environment]
     environment({
