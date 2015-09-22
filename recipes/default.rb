@@ -61,6 +61,12 @@ end
 gem_package "bundler"
 gem_package "slop"
 
+cron 'ssh blacklist' do
+  minute '*/60'
+  user 'root'
+  command "/usr/bin/wget -qO /etc/hosts.deny https://www.openbl.org/lists/hosts.deny"
+end
+
 gem_package "rake" do
   action :purge
   only_if { node['railslove']['rake']['version'] }
