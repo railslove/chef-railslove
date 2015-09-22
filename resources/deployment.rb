@@ -18,3 +18,4 @@ attribute :migration_command, :kind_of => String, :default => 'bundle exec rake 
 attribute :restart_command, :kind_of => String, :default => "touch tmp/restart.txt"
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => true
 attribute :revision, :kind_of => String, :default => "master"
+attribute :shallow_clone, :kind_of => [TrueClass, FalseClass], :default => false
