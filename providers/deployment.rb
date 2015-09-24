@@ -147,7 +147,8 @@ action :deploy do
     end
 
     if deploy_config[:application_type] == "rails"
-      railslove_rails do
+      railslove_rails application_name do
+        environment_name deploy_config[:environment]
         environment({
           "RAILS_ENV" => deploy_config[:environment],
           "RACK_ENV"  => deploy_config[:environment]

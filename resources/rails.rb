@@ -29,3 +29,4 @@ attribute :bundler_without_groups, :kind_of => [Array], :default => []
 attribute :bundler_jobs, :kind_of => Fixnum, :default => (node["cpu"]["total"] rescue 1)
 attribute :bundle_command, :kind_of => [String, NilClass], :default => "bundle"
 attribute :precompile_assets, :kind_of => [NilClass, TrueClass, FalseClass], :default => true
+attribute :environment_name, :kind_of => String, :default => "production"
