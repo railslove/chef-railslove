@@ -22,3 +22,6 @@ actions :before_compile, :before_deploy, :before_migrate, :before_symlink, :befo
 default_action :before_deploy
 
 include ApplicationCookbook::ResourceBase
+attribute :dependency_managers, :kind_of => Array, :default => []
+attribute :build_tools, :kind_of => Array, :default => []
+attribute :environment_name, :kind_of => String, :default => "production"

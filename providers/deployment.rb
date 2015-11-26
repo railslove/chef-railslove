@@ -158,7 +158,11 @@ action :deploy do
         precompile_assets deploy_config[:precompile_assets]
       end
     elsif deploy_config[:application_type] == "static"
-      railslove_static application_name
+      railslove_static application_name do
+        dependency_managers deploy_config[:dependency_managers]
+        build_tools deploy_config[:build_tools]
+        environment_name deploy_config[:environment]
+      end
     end
 
 
