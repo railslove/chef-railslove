@@ -36,7 +36,7 @@ package "imagemagick"
 package "libmagickwand-dev"
 
 template "/etc/ImageMagick/policy.xml" do
-  source "imagemagick_policy.erb"
+  source "imagemagick_policy.xml.erb"
   owner "root"
   group "root"
   mode "0644"
