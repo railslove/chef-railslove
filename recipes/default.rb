@@ -40,7 +40,6 @@ template "/etc/ImageMagick/policy.xml" do
   owner "root"
   group "root"
   mode "0644"
-  variables envs: { RAILS_ENV: node.chef_environment, RACK_ENV: node.chef_environment }
 end
 
 
