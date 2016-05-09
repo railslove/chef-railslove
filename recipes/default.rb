@@ -34,6 +34,16 @@ package "openjdk-7-jre-headless"
 package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
+
+template "/etc/ImageMagick/policy.xml" do
+  source "imagemagick_policy.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+  variables envs: { RAILS_ENV: node.chef_environment, RACK_ENV: node.chef_environment }
+end
+
+
 package "libv8-dev"
 
 package "libcurl3"
