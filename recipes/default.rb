@@ -30,7 +30,12 @@ package "libxslt-dev"
 package "mailutils"
 
 package "build-essential"
-package "openjdk-7-jre-headless"
+
+if node[:platform_version] == "16.04"
+  package "openjdk-9-jre-headless"
+else
+  package "openjdk-7-jre-headless"
+end
 package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
