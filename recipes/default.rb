@@ -39,6 +39,15 @@ end
 package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
+
+template "/etc/ImageMagick/policy.xml" do
+  source "imagemagick_policy.xml.erb"
+  owner "root"
+  group "root"
+  mode "0644"
+end
+
+
 package "libv8-dev"
 
 package "libcurl3"
