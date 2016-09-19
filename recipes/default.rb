@@ -31,7 +31,7 @@ package "mailutils"
 
 package "build-essential"
 
-if node[:platform_version] == "16.04"
+if node['platform_version'] == "16.04"
   package "openjdk-9-jre-headless"
 else
   package "openjdk-7-jre-headless"
@@ -40,7 +40,7 @@ package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
 
-template (node[:platform_version] == "16.04" ? "/etc/ImageMagick-6/policy.xml" : "/etc/ImageMagick/policy.xml") do
+template (node['platform_version'] == "16.04" ? "/etc/ImageMagick-6/policy.xml" : "/etc/ImageMagick/policy.xml") do
   source "imagemagick_policy.xml.erb"
   owner "root"
   group "root"
