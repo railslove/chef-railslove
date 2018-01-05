@@ -21,9 +21,8 @@ if Chef::Config[:solo]
 end
 
 search(:users, "(#{node['roles'].map{|r| "groups:#{r}" }.join(" OR ")})").each do |user|
-  railslove_dokku_user do
+  railslove_dokku_user user['id'] do
     key user['ssh_keys']
-    user user['id']
     action user.fetch('action', 'add')
   end
 end
