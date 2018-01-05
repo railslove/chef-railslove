@@ -20,6 +20,7 @@ action :add do
       system("grep #{new_resource.key} /home/dokku/.ssh/authorized_keys")
     end
   end
+  new_resource.updated_by_last_action(true)
 end
 
 use_inline_resources
@@ -27,4 +28,5 @@ action :remove do
   execute "removing ssh key for #{new_resource.user}" do
     command "sshcommand acl-remove dokku #{new_resource.user}"
   end
+  new_resource.updated_by_last_action(true)
 end
