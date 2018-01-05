@@ -9,6 +9,7 @@ def whyrun_supported?
   true
 end
 
+use_inline_resources
 action :add do
   execute "adding ssh key for #{new_resource.user}" do
     command "sshcommand acl-remove dokku #{new_resource.user}"
@@ -21,9 +22,9 @@ action :add do
   end
 end
 
+use_inline_resources
 action :remove do
   execute "removing ssh key for #{new_resource.user}" do
-    command "echo #{new_resource.key} | sshcommand " \
-            "acl-remove dokku #{new_resource.user}"
+    command "sshcommand acl-remove dokku #{new_resource.user}"
   end
 end
