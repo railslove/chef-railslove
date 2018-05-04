@@ -43,7 +43,7 @@ package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
 
-template (node['platform_version'] == "16.04" ? "/etc/ImageMagick-6/policy.xml" : "/etc/ImageMagick/policy.xml") do
+template (['16.04', '18.04'].include?(node['platform_version']) ? "/etc/ImageMagick-6/policy.xml" : "/etc/ImageMagick/policy.xml") do
   source "imagemagick_policy.xml.erb"
   owner "root"
   group "root"
