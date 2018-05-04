@@ -33,11 +33,12 @@ package "build-essential"
 
 if node['platform_version'] == '18.04'
   package 'openjdk-11-jre-headless'
-if node['platform_version'] == "16.04"
+elsif node['platform_version'] == "16.04"
   package "openjdk-9-jre-headless"
 else
   package "openjdk-7-jre-headless"
 end
+
 package "nodejs"
 package "imagemagick"
 package "libmagickwand-dev"
